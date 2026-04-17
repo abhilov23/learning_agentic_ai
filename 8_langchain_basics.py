@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 import os
+from langchain_core.prompts import PromptTemplate  # fixed import
 
 load_dotenv()
 
@@ -22,7 +23,8 @@ def main():
     He also acquired Twitter (now X).
     """
 
-    summary_template = f"""
+    # ❌ removed f-string
+    summary_template = """
     Given the following information about a person:
 
     {information}
@@ -32,7 +34,13 @@ def main():
     2. Two interesting facts
     """
 
-    result = llm.invoke(summary_template)
+    summary_prompt_template = PromptTemplate(
+        input_variables=["information"],
+        template=summary_template
+    )
+    chain = summary_prompt_template | llm
+    result = chain.invoke(summary_prompt_template.format(information=information))
+
     print(result.content)
 
 if __name__ == "__main__":
