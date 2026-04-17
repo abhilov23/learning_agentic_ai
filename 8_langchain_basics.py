@@ -10,15 +10,15 @@ def main():
     if not api_key:
         raise ValueError("NVIDIA_API_KEY not found")
 
-    #llm = ChatNVIDIA(
+    llm = ChatNVIDIA(
         model="meta/llama-3.1-70b-instruct",
         nvidia_api_key=api_key,
-    #)
-
-    llm = ChatNVIDIA(
-        model="google/gemma-4-31b-it",
-        nvidia_api_key=os.environ.get("GEMMA_API_KEY"),
     )
+
+    #llm = ChatNVIDIA(
+    #    model="google/gemma-4-31b-it",
+    #    nvidia_api_key=os.environ.get("GEMMA_API_KEY"),
+    #)
     
     information = """
     Elon Musk is a South African-born American entrepreneur and businessman known for leading multiple high-impact technology companies.
