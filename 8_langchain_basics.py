@@ -10,9 +10,14 @@ def main():
     if not api_key:
         raise ValueError("NVIDIA_API_KEY not found")
 
-    llm = ChatNVIDIA(
+    #llm = ChatNVIDIA(
         model="meta/llama-3.1-70b-instruct",
         nvidia_api_key=api_key,
+    #)
+
+    llm = ChatNVIDIA(
+        model="google/gemma-4-31b-it",
+        nvidia_api_key=os.environ.get("GEMMA_API_KEY"),
     )
     
     information = """
@@ -23,7 +28,6 @@ def main():
     He also acquired Twitter (now X).
     """
 
-    # ❌ removed f-string
     summary_template = """
     Given the following information about a person:
 
@@ -38,6 +42,7 @@ def main():
         input_variables=["information"],
         template=summary_template
     )
+    #here the chain is created, which means the system first reach to the summary_prompt_template then reach to the llm
     chain = summary_prompt_template | llm
     result = chain.invoke(summary_prompt_template.format(information=information))
 
