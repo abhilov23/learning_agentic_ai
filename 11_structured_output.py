@@ -2,11 +2,12 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 import os
 import httpx
-from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.tools import tool
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage, AIMessage, ToolMessage
-
+from typing import List, Union
+from pydantic import BaseModel, Field # the ptdantic package is used to create a pydantic model for the structured output
 
 load_dotenv()
 
@@ -25,20 +26,25 @@ def configure_runtime_env() -> None:
 
 
 @tool
-def search_tool(query: str) -> str:
+def search_tool(query: str) -> List[dict]:
     """
     Search the internet for current information.
     """
     print(f"Searching for: {query}")
-    search = DuckDuckGoSearchRun()
-    result = search.run(query)
-    return result
+    try:
+        search = DuckDuckGoSearchResults(output_format="list")
+        results = search.invoke(query)
+        return [{"title": r["title"], "url": r["link"]} for r in results]
+    except Exception as e:
+        # Keep the tool non-fatal when optional search deps are unavailable.
+        print(f"Search tool unavailable: {e}")
+        return []
 
 
 # this function creates the print_logs() function
 def print_logs(messages):
     for i, msg in enumerate(messages):
-        print(f"\n🔹 Step {i+1}")
+        print(f"\n[Step {i+1}]")
 
         if isinstance(msg, HumanMessage):
             print("User:")
@@ -48,8 +54,8 @@ def print_logs(messages):
             if msg.tool_calls:
                 print("AI (Tool Call):")
                 for call in msg.tool_calls:
-                    print(f"   → Tool: {call['name']}")
-                    print(f"   → Args: {call['args']}")
+                    print(f"   -> Tool: {call['name']}")
+                    print(f"   -> Args: {call['args']}")
             else:
                 print("AI (Final Response):")
                 print(msg.content)
@@ -57,6 +63,27 @@ def print_logs(messages):
         elif isinstance(msg, ToolMessage):
             print("Tool Output:")
             print(msg.content)
+
+
+
+class Source(BaseModel):
+    """
+    Schema for a source used by the agent
+    """
+    title: str
+    url: str
+    
+    
+
+class AgentResponse(BaseModel):
+    """
+    Schema for the agent response with answer and sources
+    """
+    answer: str = Field(description="The agent's answer to the query")
+    sources: Union[List[Source], str] = Field(
+        default_factory=list,
+        description="Sources used for the response as a list of {title, url}.",
+    )
 
 
 
@@ -85,18 +112,24 @@ def main():
     agent = create_agent(
         model=llm,
         tools=tools,
-        system_prompt="You are a helpful assistant on the pornhub site that uses tools to answer user questions if needed. Also after using the tool modify the output and give a proper explanation for the same.",
+        system_prompt = """
+        You MUST include sources from tool output.
+        Do NOT hallucinate URLs.
+        Only use URLs provided by the tool.
+        """,
+        response_format=AgentResponse
     )
 
     response = agent.invoke(
         {
-            "messages": HumanMessage(content="tell me the name of the beautiful petite pornstars like ellie eilish?"),
+            "messages": HumanMessage(content="who is the PM of korea?"),
         }
     )
-    result = response["messages"][-1].content
+    result = response.get("structured_response") or response["messages"][-1].content
     print_logs(response["messages"])
     print(f" Final Answer: {result}")
 
 
 if __name__ == "__main__":
     main()
+
