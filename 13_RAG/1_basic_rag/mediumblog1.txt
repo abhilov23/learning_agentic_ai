@@ -1,0 +1,629 @@
+
+
+Abhilov Gupta
+Get unlimited access to the best of Medium for less than $1/week.
+Become a member
+
+The ABCs of Blockchain: Understanding the Basics
+Abhilov Gupta
+Abhilov Gupta
+5 min read
+·
+Mar 20, 2024
+7
+
+
+
+
+
+
+Introduction
+Welcome to the world of blockchain — a technology that’s not just transforming industries but reshaping the very fabric of our digital landscape. If you’ve ever wondered about those mysterious cryptocurrencies or heard whispers of blockchain’s potential, you’re in for an enlightening journey.
+
+Imagine a digital ledger that’s not controlled by any single entity but shared across a network of computers worldwide. That’s the essence of blockchain — a decentralized marvel that’s revolutionizing how we record and verify transactions, from financial exchanges to supply chain management and beyond.
+
+In this article, we’ll embark on a journey to demystify blockchain, exploring its fundamental concepts, inner workings, and real-world applications. Whether you’re a curious newcomer or a seasoned tech enthusiast, join us as we unravel the magic of blockchain and uncover its transformative power.
+
+So, fasten your seatbelt and prepare to delve into the captivating world of blockchain — a realm where innovation knows no bounds and possibilities are limited only by our imagination.
+
+What is blockchain?
+Let me explain you blockchain with a simple example:
+
+Imagine you have a big, special notebook that everyone in your class can write in, but no one can tear any pages out or change what’s already written. This notebook keeps track of who gave what to whom and when.
+
+Now, instead of one notebook, there are lots and lots of these notebooks, and they’re all connected together in a big chain. Each notebook in the chain has the same information written in it, and everyone can see what’s written, but no one can change it once it’s there.
+
+So, if you want to give your toy to your friend, you tell everyone in your class, and they write it down in their notebooks. Then, if anyone tries to say they have your toy when they don’t, everyone can check their notebooks to see who really has it. That’s basically how a blockchain works! It’s like a super secure way of keeping track of who has what, without anyone being able to cheat.
+
+In simple terms, a blockchain is like a super secure digital notebook that keeps track of important things, and it’s powered by lots of people working together to make sure everything is accurate and fair.
+
+Now In technical terms, blockchain consists of a series of blocks, each containing a list of transactions. These blocks are cryptographically linked together in a chronological order, forming a chain.
+
+This decentralized structure means that the blockchain is maintained by a network of nodes rather than a central authority. Nodes validate and record transactions by reaching consensus through various consensus mechanisms, such as proof of work or proof of stake.
+
+Once a block is added to the chain, it is virtually impossible to alter the data within it without altering all subsequent blocks, making the blockchain tamper-proof. This makes blockchains suitable for applications where trust, security, and transparency are essential, such as cryptocurrencies, supply chain management, and decentralized finance (DeFi) platforms.
+
+Origin
+Blockchain technology originated with the creation of Bitcoin, the first decentralized cryptocurrency, in 2008 by an individual or group using the pseudonym Satoshi Nakamoto. The origins of blockchain can be traced back to the necessity for a trustless, secure, and decentralized system for recording and verifying transactions in a digital currency.
+
+Download the Medium App
+The key innovation introduced by Bitcoin was the blockchain, which serves as a public ledger to record all transactions that occur within the Bitcoin network.
+
+Types Of blockchain
+There are four types of blockchains: Public, private, consortium and hybrid.
+
+Press enter or click to view image in full size
+
+Type of Blockchains
+Public Blockchains: Public blockchains are open networks accessible to anyone. They offer a decentralized environment where participants can validate transactions and create new blocks. All transactions are transparent and immutable, making public blockchains suitable for applications requiring transparency and censorship resistance.
+
+Example: Bitcoin (BTC) is the most famous example of a public blockchain. It allows users to send and receive payments without the need for a central authority.
+
+Private Blockchains: Private blockchains are restricted to authorized participants. These networks prioritize privacy and control. Participants are often known and pre-approved, enabling faster transactions and efficient collaboration among known entities.
+
+Example: Hyperledger Fabric is an example of a private blockchain framework. It is used by enterprises for various purposes such as supply chain tracking, asset management, and identity verification.
+
+Consortium Blockchains: Consortium blockchains are semi-decentralized networks where a predefined group of participants validate transactions. These networks are more scalable than public blockchains and maintain a degree of control, making them suitable for industries that require a balance between openness and privacy.
+
+Example: R3 Corda is a consortium blockchain platform designed for use by financial institutions. It enables banks to transact directly with each other, facilitating more efficient and secure settlement processes.
+
+Hybrid Blockchain: A hybrid blockchain is a unique integration of two different types of blockchains: public and private (permissioned) blockchains. It seeks to combine the advantages of both while addressing some of their individual limitations. In a hybrid blockchain architecture, certain aspects of the blockchain network are public and decentralized, while others remain private and controlled by designated entities.
+
+Example: One example of a hybrid blockchain project is Dragonchain. Dragonchain was developed by Disney as an open-source platform for building and deploying blockchain applications.
+
+Challenges and Limitations
+Transaction Throughput: One of the primary scalability issues with blockchain networks is transaction throughput, or the number of transactions the network can process per unit of time. Traditional blockchains like Bitcoin and Ethereum have limited throughput, often leading to network congestion and higher transaction fees during peak periods.
+
+Block Size and Block Interval: Blockchain scalability is also affected by the size of blocks and the time interval between blocks. Increasing the block size can improve throughput, but it comes with trade-offs such as increased storage requirements and slower propagation times. Similarly, reducing the block interval can increase throughput but may lead to a higher likelihood of forks and orphaned blocks.
+
+Consensus Mechanism: The consensus mechanism used by a blockchain network can impact its scalability. Proof-of-Work (PoW), while secure, is inherently less scalable due to the computational resources required for mining and the limited block production rate. Proof-of-Stake (PoS) and other consensus mechanisms offer better scalability potential but may introduce other challenges such as centralization risks.
+
+Proof-of-Work Mining: The most prominent energy consumption concern associated with blockchain networks stems from the proof-of-work (PoW) consensus mechanism used by many cryptocurrencies like Bitcoin and Ethereum. PoW requires miners to solve complex mathematical puzzles to validate transactions and secure the network, which demands significant computational power and energy consumption
+
+Conclusion
+In conclusion, blockchain technology represents a paradigm shift in how data and transactions are managed, offering unparalleled opportunities for innovation and disruption across sectors. As businesses and governments continue to explore its potential, blockchain is poised to revolutionize industries and reshape the future of digital infrastructure.
+
+In future articles, we’ll delve deeper into specific use cases, emerging trends, and innovative applications of blockchain technology. From decentralized finance (DeFi) to supply chain management and beyond, we’ll continue to uncover the transformative potential of blockchain in shaping the future of our digital economy.
+
+Stay tuned for our upcoming articles where we’ll dive into more advanced topics, provide practical insights, and explore the latest developments in the world of blockchain. Whether you’re a blockchain enthusiast, a curious newcomer, or a seasoned industry professional, there’s always something new to discover in the realm of blockchain technology.
+
+Thank you for joining us on this journey, and we look forward to sharing more exciting insights with you soon.
+
+Blockchain
+Defi
+Development
+Web3
+Nft
+7
+
+
+
+
+
+Abhilov Gupta
+Written by Abhilov Gupta
+29 followers
+·
+262 following
+Developer by day, Security Researcher by night
+
+Edit profile
+No responses yet
+
+Abhilov Gupta
+Abhilov Gupta
+﻿
+
+Cancel
+Respond
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
+
+Open in Google Cache
+Open in Read-Medium
+Open in Freedium
+Open in Archive.today
+Open in Archive.is
+Open in Proxy API
+Iframe/gist/embeds are not loaded in the Google Cache proxy. For those, please use the Read-Medium/Archive proxy instead.
+
+question-ai-logo
+managemanage
+managemanage
+useruser
+fullfull
+closeclose
+Chat AI
+Hello! Is there any question I can help you with?
+What is the purpose of student government in the United States?
+Which city is known as the “Big Apple” in the United States?
+Ask AI
+logo
+more
+Sidebar menu
+Search
+Write
+Notifications
+
+Abhilov Gupta
+Get unlimited access to the best of Medium for less than $1/week.
+Become a member
+
+Exposing Vulnerabilities: The Power of Google Dorking in Cybersecurity Part-1
+Abhilov Gupta
+Abhilov Gupta
+5 min read
+·
+Oct 15, 2024
+7
+
+
+
+
+
+
+Hey Geeks! My name is Abhilov, and I’m passionate about exploring the exciting world of technology and cybersecurity. I have a keen interest in understanding how digital systems work and how we can both build and hack them. I’m thrilled to announce that I will be releasing a series of articles focused on red teaming, blue teaming, and development. In this series, we’ll dive deep into various strategies, techniques, and tools used in these fields, helping you enhance your skills and knowledge. Stay tuned for insights and discussions that will empower you in your cybersecurity journey!
+
+Introduction
+
+Google is a powerful search engine that most of us use every day to find information. However, there is a technique called Google Dorking that takes search to a deeper level. While it might sound complicated, understanding the differences between Google Dorking and regular Google searching is crucial, especially for those interested in cybersecurity. This article will break down these concepts for beginners and dive deeper into the advanced aspects.
+
+Understanding the Difference Between Google Dorking and Google Searching
+What is Regular Google Searching?
+
+Regular Google Searching is something that we all do on the internet while exploring it or when finding some information regarding any thing. But the problem with these searches is that it brings us everything related to that specific topic we are looking for rather that giving us the desired results.
+
+For Example:
+
+Press enter or click to view image in full size
+
+Suppose you are looking for a book in PDF format, so you search for it on Google using the term ‘book_name.’ This will bring up all the results related to that specific book, and then you have to look for the link to the downloadable PDF file. For example:
+Press enter or click to view image in full size
+
+Characteristics of Regular Google Searches:
+
+User-Friendly: Designed to be used easily by anyone and allowing them to find general information.
+Broad Results: Provides the results based on keywords, like blogs, articles, news, and more.
+Natural Language: Can be done using simple language or questions like “how to secure my Wi-Fi.”
+What is Google Dorking?
+
+Google Dorking, sometimes called Google Hacking, is a way to use special search tricks to uncover information that’s not easily found through normal searches. In simple words, we can get the desired results using google dorks . It’s commonly used by cybersecurity professionals and ethical hackers to locate sensitive data that may have been accidentally made public online.
+
+For example:
+
+Press enter or click to view image in full size
+
+This time, a clever guy named Alex wanted to search for the book again. But instead of a regular search, he used Google Dorking. And guess what? He found exactly what he was looking for! i.e. The book in PDF format.
+Press enter or click to view image in full size
+
+Characteristics of Google Dorking:
+
+Advanced Operators: Uses special search operators like site:, filetype:, intitle:, and others to refine searches.
+Targeted Searches: Helps users to find very specific information, like exposed databases, login pages, or security vulnerabilities.
+Requires Knowledge: It requires understanding of operators and how to use them effectively.
+Key differences Between Google Searching and google Dorking:
+Press enter or click to view image in full size
+
+Common Google Search Operators for Dorking
+let’s explore some of the operators used in Google Dorking and how they differ from regular searches:
+
+Become a Medium member
+site:: Restricts results to a specific website.
+
+Regular Search: “cybersecurity news bbc.com” — Shows articles related to cybersecurity from BBC. But it will also bring you other results as well.
+Google Dorking: "cybersecurity news" site:bbc.com — brings you all the cybersecurity news posted on BBC.com.
+filetype: / ext:: Searches for specific types of files.
+
+Regular Search: example explained in basic explanation
+Google Dorking: filetype:pdf — Can bring you files specifically in PDF extension.
+intitle:: Finds pages with specific words in their title.
+
+Regular Search: “how to bake a cake” — Returns pages where “how to bake a cake” is mentioned.
+Google Dorking: intitle:"bake a cake"— Returns pages where “how to bake a cake” is part of the title.
+inurl:: Searches for specific words within URLs.
+
+Regular Search: Less commonly used.
+Google Dorking: inurl:login — Finds web pages with “login” in their URL, potentially revealing login pages.
+Use cases of Google Dorking in Cybersecurity:
+Google Dorking is a double-edged sword; while it is often used by cybersecurity professionals for legitimate purposes, it can also be exploited by attackers. Here are some common use cases:
+
+Finding Exposed Databases: Cybersecurity analysts can use Google Dorking to identify databases that are mistakenly left exposed online, helping to secure them.
+Vulnerability Assessment: Penetration testers use Google Dorks to find potential entry points in web applications that might be insecure.
+Discovering Misconfigurations: Using Google Dorking to search for misconfigured servers or directories can help identify weak points in a network.
+Malicious Use: Unfortunately, attackers might use these same techniques to exploit these vulnerabilities before they are fixed.
+Conclusion
+while Google Dorking can be a powerful tool for discovering publicly accessible information, it’s essential to use this technique ethically and responsibly.
+
+In the upcoming articles, we will discuss more about advance google dorks, dorks related to other search engine and how we can use them to find vulnerabilities in real world. So, don’t forget to follow my Medium account to stay updated with my latest posts! . You can also take a look at my twitter account where I usually share content related to cybersecurity and development.
+
+Cybersecurity
+Google
+Security
+Development
+Hacking
+7
+
+
+
+
+
+Abhilov Gupta
+Written by Abhilov Gupta
+29 followers
+·
+262 following
+Developer by day, Security Researcher by night
+
+Edit profile
+No responses yet
+
+Abhilov Gupta
+Abhilov Gupta
+﻿
+
+Cancel
+Respond
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
+
+Open in Google Cache
+Open in Read-Medium
+Open in Freedium
+Open in Archive.today
+Open in Archive.is
+Open in Proxy API
+Iframe/gist/embeds are not loaded in the Google Cache proxy. For those, please use the Read-Medium/Archive proxy instead.
+
+question-ai-logo
+managemanage
+managemanage
+useruser
+fullfull
+closeclose
+Chat AI
+Hello! Is there any question I can help you with?
+What is the purpose of student government in the United States?
+Which city is known as the “Big Apple” in the United States?
+Ask AI
+logo
+more
+Sidebar menu
+Search
+Write
+Notifications
+
+Abhilov Gupta
+Get unlimited access to the best of Medium for less than $1/week.
+Become a member
+
+Exposing Vulnerabilities: The Power of Google Dorking in Cybersecurity Part-2
+Abhilov Gupta
+Abhilov Gupta
+4 min read
+·
+Oct 16, 2024
+5
+
+
+
+
+
+
+Hey nerds! Abhilov here, Ready to level up your hacking game? In this sequel to our first adventure, we’re diving even deeper into the fascinating (and sometimes shocking) world of Google Dorking. Think you know everything there is to know about searching the web? Think again!
+
+Press enter or click to view image in full size
+
+Photo by bruce mars on Unsplash
+From now, grab your virtual magnifying glass, because it’s time to dig into some juicy dorks that will not only expand your knowledge but also keep your cybersecurity skills sharp. Let’s get started!
+
+In the first part of our series, “Exposing Vulnerabilities: The Power of Google Dorking in Cybersecurity”, we explored the fundamentals of Google Dorking, uncovering how search queries can reveal hidden or vulnerable data. As we dive into Part 2, we’ll take things a step further, focusing on advanced dorking techniques and real-world case studies that illustrate the risks and rewards of this powerful tool in the hands of cybersecurity professionals and malicious actors alike.
+
+Here is the complete list of all the dorks you need to know:
+
+Press enter or click to view image in full size
+
+Advance Dorking techniques
+When it comes to the advance part of dorking, you can use multiple dorks at a time to look for sensitive information or vulnerable endpoints publicly available on the internet. You can also add the keywords like “DB_PASSWORD”, ”confidential”, “do not distribute” or “PASSWORD” to look for the desired results.
+
+inurl:*.gov “password” | “credential” | “username” filetype:log
+inurl:*.gov: This part of the query restricts the search to URLs that end with .gov .
+
+"password" | "credential" | "username": This section specifies the keywords to search for. We are using | (OR operator) to look for multiple keywords in one search.
+
+filetype:log: only return files with the .log extension.
+
+2. inurl:admin intitle:“control panel”
+
+inurl:admin: search for the URLs that contain the term “admin” .
+
+intitle:"control panel": looks for the pages wherethe title includes the phrase “control panel” .
+
+Write on Medium
+3. filetype:bak inurl:”backup”
+
+filetype:bak: looks for the files with .bak extension . .bak extension is for the backup files.
+
+inurl:"backup": This section restricts the search to URLs that include the word "backup".
+
+Hackerone Reports:
+Google dorking lead to sensitive information disclosure
+U.S. Dept Of Defense disclosed on HackerOne: PII leakage-Full SSN...
+This was a simple Google dork search as well as checking other search engines to discover sensitive documents.
+hackerone.com
+
+2. Improper Access Control via google dorking
+
+Khan Academy disclosed on HackerOne: Enumerate all the class codes...
+I used this particular google dork `site:khanacademy.org/join/*` to enumerate all the links of joining classes. 1. Go…
+hackerone.com
+
+3. google dorking lead to unauthorized AWS account access and Account takeover
+
+From Google Dorking to Unauthorized AWS Account Access and Account Takeover
+Ending 2023 with good note, I came up with another misconfiguration due to a parameter that leads to exposure of AWS…
+medium.com
+
+If you’re on the lookout for more Google Dorks to enhance your red teaming efforts, be sure to check out the Google Hacking Database (GHDB) — a comprehensive resource for finding vulnerable targets and potential security risks.
+
+Caution:
+While Google Dorking can be a powerful method for identifying potential security weaknesses, it should be used responsibly and within the boundaries of ethical hacking practices. Misuse of these techniques for unauthorized access or data exploitation can result in legal consequences. Always ensure you have permission before testing any system, and follow proper disclosure guidelines when discovering vulnerabilities.
+
+Conclusion:
+As we wrap up Part 2 of “Exposing Vulnerabilities: The Power of Google Dorking in Cybersecurity,” it’s clear that the potential of advanced dorking techniques is immense — whether for bolstering security or uncovering sensitive information. While Google Dorking remains a powerful tool in the cybersecurity arsenal, it’s also a double-edged sword that can be exploited by malicious actors if proper precautions aren’t taken. By understanding how search engines can reveal vulnerabilities, ethical hackers and security professionals can stay ahead of potential threats, securing their systems before they’re exploited. Keep experimenting with new queries, stay curious, and most importantly, stay vigilant.
+
+In the upcoming articles, we will discuss more about advance google dorks related to the specific bugs, dorks related to other search engine and how we can use them to find vulnerabilities in real world. So, Don’t forget to follow me on Medium and twitter for more exciting content and updates.
+
+Cybersecurity
+Google
+Dorking
+Hacking
+Bug Bounty
+5
+
+
+
+
+
+Abhilov Gupta
+Written by Abhilov Gupta
+29 followers
+·
+262 following
+Developer by day, Security Researcher by night
+
+Edit profile
+No responses yet
+
+Abhilov Gupta
+Abhilov Gupta
+﻿
+
+Cancel
+Respond
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
+
+Open in Google Cache
+Open in Read-Medium
+Open in Freedium
+Open in Archive.today
+Open in Archive.is
+Open in Proxy API
+Iframe/gist/embeds are not loaded in the Google Cache proxy. For those, please use the Read-Medium/Archive proxy instead.
+
+question-ai-logo
+managemanage
+managemanage
+useruser
+fullfull
+closeclose
+Chat AI
+Hello! Is there any question I can help you with?
+What is the purpose of student government in the United States?
+Which city is known as the “Big Apple” in the United States?
+Ask AI
+logo
+more
+Sidebar menu
+Search
+Write
+Notifications
+
+Abhilov Gupta
+Get unlimited access to the best of Medium for less than $1/week.
+Become a member
+
+
+Yuval
+ highlighted
+
+Exposing Vulnerabilities: The Power of Google Dorking in Cybersecurity Part-3
+Abhilov Gupta
+Abhilov Gupta
+6 min read
+·
+Nov 5, 2024
+12
+
+
+
+
+
+
+Hey forks! Welcome back. In the last two articles of this mini-series, we’ve dived into the rabbit hole of Google Dorking-twice. We have covered the dark secrets of the google. But wait, there is more! In the final showdown, Not only we will reveal how Google Dorks can be your ultimate security compass, but we’ll also break free from Google’s grip and see what the other search engines are hiding. But wait! are you new here? Don’t worry — jump in! Catch up on Parts 1 & 2, or just stay for the ride. Buckle up — your digital survival kit is about to get a major upgrade!
+
+
+Using Google Dorks for finding Web Security Targets
+Ever wondered how hackers spot weak points like they’re reading a map? It was because hackers know how to use our daily life tech in an advance manner. And guess what we are also going to do the same with google dorking, so that we can find better targets related to the specific web-security vulnerability. But how can we do that? By crafting specifically precise search queries, you can unearth unprotected databases, exposed admin pages, reflected error reflecting websites for SQL injection, and many more. Either it is development or security, all it takes is a bit of clever googling. Before we are going to take a deep dive into google dorks and its use for security, you also need to cover web security part, and if you are you are a beginner then do not worry about it, we will cover the complete web-security in the upcoming articles. But if you are curious about it, then you can learn more about it from PortSwigger academy. Time to cook now!
+
+SQL Injection :
+Looking for vulnerable parameters using google dorks:
+inurl:id= | inurl:pid= | inurl:category= | inurl:cat= | inurl:action= | inurl:sid= | inurl:dir= | inurl:& site:example[.]com
+This google dork will bring you URLs with parameters like id=, cat=, or action= (For instance, URLs like www.example.com/page.php?id=123) often indicate that the page is accessing a database and querying information based on the parameter value. If these parameters are not properly sanitized, they can be exploited through SQL injection.
+
+Write on Medium
+2. Looking for SQL errors using google Dorking : Usually websites do not reflect the SQL errors on client side, but when some error reflects on the website, it means we can also look for it using google dorks, and test those parameters accordingly :
+
+"You have an error in your SQL syntax" | "Warning: mysql_fetch_array()" | "Warning: mysql_fetch_assoc()" | "Warning: mysql_num_rows()" site:example.com
+This dork searches for MySQL-specific error messages that often indicate issues with query syntax or handling.
+"Microsoft OLE DB Provider for SQL Server error" | "Unclosed quotation mark after the character string" | "Incorrect syntax near" site:example.com
+This dork targets Microsoft SQL Server errors. Messages like “Unclosed quotation mark” are typical when an attacker tries to inject SQL but fails, revealing some vulnerability details.
+"PostgreSQL query failed" | "supplied argument is not a valid PostgreSQL result" | "Warning: pg_query()" | "Warning: pg_exec()" site:example.com
+PostgreSQL errors like “supplied argument is not a valid PostgreSQL result” may appear on pages with improper query handling.
+"Warning: mysql_" | "Warning: pg_" | "Warning: mssql_" | "SQL syntax error" | "Warning: oci_" | "SQL query failed" site:example.com
+This generic dork looks for common SQL-related warnings and errors across different SQL systems. It’s useful for identifying a variety of SQL databases.
+Open Redirects :
+We can also use google dorks for targeting redirecting parameters available in the URLs, Lets see how we can do that:
+
+inurl:q= | inurl:s= | inurl:search= | inurl:query= | inurl:& site:example.com
+inurl:url= | inurl:return= | inurl:next= | inurl:redir= | inurl:http site:example.com
+We can use these google dorks for finding URLs with redirecting parameters like q=, s=, search=, query=, and & , which are likely vulnerable to open redirect vulnerabilities.
+
+LFI (Local File Inclusion):
+To find potential LFI vulnerabilities, you can target specific parameters and patterns often associated with file inclusion. Lets see how we can do that using google dorks:
+
+inurl:index.php?page= | inurl:file= | inurl:inc= | inurl:layout= | inurl:template= | inurl:content= | inurl:module= site:example.com
+This dork searches for URLs containing parameters (page=, file=, inc=, etc.) that are commonly associated with file inclusion. You might try appending paths to sensitive files (e.g., /etc/passwd) to test if they are loaded by the application.
+
+inurl:index.php?page= | inurl:view.php?file= | inurl:include.php?path= | inurl:load.php?content= site:example.com
+You can also look for specific files extensions PHP files specially, this dork searches for commonly used file inclusion patterns in PHP applications.
+inurl:?page=../../ | inurl:?file=../../ | inurl:?path=../../ site:example.com
+This google dork will help you to find path traversal indicating parameters, the ../../ pattern is often a telltale sign of directory traversal, which attackers may use to exploit LFI vulnerabilities by navigating to sensitive files.
+"failed to open stream: No such file or directory in" | "Warning: include" | "Warning: require" | "Warning: main" | "Warning: fopen" site:example.com
+You can also look for error messages that indicates file inclusion issues, often appearing when LFI attempts fail due to incorrect file paths.
+inurl:page=../../../etc/passwd | inurl:file=../../../etc/shadow | inurl:../../../../../../etc/hosts site:example.com
+These specific file paths (like /etc/passwd, /etc/shadow, /etc/hosts) are often targeted in LFI attacks on Unix-based systems to access sensitive information.
+Information disclosure :
+We can also use google dorks to uncover leaked sensitive data, lets see how we can do that:
+
+ext:env | ext:xml | ext:conf | ext:cnf | ext:ini | ext:yaml | ext:properties "DB_PASSWORD" | "DATABASE" | "PASSWORD"
+This dork targets file types commonly used for configuration, such as .env, .xml, .conf, .cnf, .ini, .yaml, and .properties. These files may contain sensitive information, like database credentials, API keys, or application secrets. Keywords like "DB_PASSWORD", "DATABASE", or "PASSWORD" help narrow down to files that may contain sensitive data.
+ext:log | "logfile" | "error.log" | "access.log" | "debug.log" | "trace.log" | intext:"error" | intext:"failure"
+We can also look for specific filenames (e.g., error.log or access.log) or in-text keywords ("error", "failure") often reveals accessible log files containing sensitive debugging information.
+ext:bak | ext:old | ext:backup | ext:zip | ext:tar | ext:gz | ext:sql | "backup" | "database"
+we can also look for backup files, typically with extensions like .bak, .old, .backup, .zip, .tar, .gz, and .sql, often include databases, configurations, and entire website directories.
+inurl:passwords.txt | ext:txt | ext:log | "password" | "credentials" | "login" | "passwd" | "pwd"
+Text files like passwords.txt, or any .txt or .log files that contain keywords like "password", "credentials", or "login", are often created by developers for internal use but may inadvertently become accessible. This dork searches for files that might contain plaintext passwords or credentials for different services or accounts.
+Finding Cloud Storage and Private Buckets :
+My favorite part of bug-bounty is finding misconfigured cloud buckets and AWS instances. Lets see how you can use google dorks to find more target URLs related to cloud instances and Buckets:
+
+site:s3.amazonaws.com | site:storage.googleapis.com | site:blob.core.windows.net "index of"
+Cloud storage providers like AWS S3, Google Cloud Storage, and Azure Blob Storage host a significant amount of data. This dork searches for bucket URLs with directory listings ("index of"), which can indicate publicly accessible storage. Such storage can expose private files if misconfigured.
+
+Conclusion
+As we conclude our journey through the world of Google Dorking, we’ve uncovered powerful techniques that can serve as both a security compass and a cautionary tale. The knowledge you’ve gained here is not just a tool; it’s an invitation to explore deeper into the vast landscape of cybersecurity. Remember, every expert was once a beginner, and every query you master brings you one step closer to becoming a formidable defender of the digital realm.
+
+As we move forward, let the ancient wisdom guide you: “एकः अहम् अदित्यः नास्ति, न भूतो न भविष्यति” (Eko aham adityo nasti, na bhuto na bhavishyati) — “There is one light that exists, and there is no existence of past or future.” This reminds us that your journey is illuminated by the knowledge you seek today. Embrace the present moment to build your skills and enhance your understanding. Each effort you make now lays the foundation for a more secure digital future, not just for yourself, but for everyone.
+
+Let’s continue this adventure together, exploring web security principles and fortifying our defenses against vulnerabilities. Your commitment to learning and growing is the key to unlocking a safer digital world for all.
+
+And do not forget to follow me on medium for future updates. Aside from that you can also follow my twitter account where I usually share content related to cybersecurity.
+
+Warning
+While the techniques discussed in this article can be invaluable for identifying vulnerabilities, it’s crucial to remember that unauthorized use of Google Dorking for malicious purposes is illegal and unethical. Always obtain explicit permission before testing any systems or applications that are not your own. The knowledge shared here should be used responsibly, aiming to enhance security and protect sensitive information, not to exploit weaknesses for personal gain. Together, let’s strive to create a safer digital world for everyone!
+
+Cybersecurity
+Dorking
+Hacking
+Hacker
+Security
+12
+
+
+
+
+
+Abhilov Gupta
+Written by Abhilov Gupta
+29 followers
+·
+262 following
+Developer by day, Security Researcher by night
+
+Edit profile
+No responses yet
+
+Abhilov Gupta
+Abhilov Gupta
+﻿
+
+Cancel
+Respond
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
+
+Open in Google Cache
+Open in Read-Medium
+Open in Freedium
+Open in Archive.today
+Open in Archive.is
+Open in Proxy API
+Iframe/gist/embeds are not loaded in the Google Cache proxy. For those, please use the Read-Medium/Archive proxy instead.
