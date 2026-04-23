@@ -38,7 +38,7 @@ if __name__ == '__main__':
     
     embeddings = NVIDIAEmbeddings(
         model="nvidia/nv-embedqa-e5-v5",
-        api_key=os.getenv("NVIDIA_API_KEY"),
+        api_key=os.getenv("NVIDIA_NV_API"),
     )
 
     print("uploading to Pinecone...")
