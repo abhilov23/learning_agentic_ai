@@ -14,7 +14,7 @@ NUM_SEARCH_RESULTS_PER_QUERY = 3
 RESULT_TEXT_MAX_CHARACTERS = 10000
 
 
-question = "Who is the PM of India?"
+question = "Who will win the bengal election 2026?"
 
 # getting the LLM instance to be used across all modules for consistency in responses and to avoid multiple instances of the model being created across modules.
 llm = get_llm()
