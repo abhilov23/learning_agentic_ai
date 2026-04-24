@@ -1,7 +1,5 @@
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper 
 from typing import List
-import requests
-from bs4 import BeautifulSoup
 
 
 # this will fetch the top n results for the query and print the links

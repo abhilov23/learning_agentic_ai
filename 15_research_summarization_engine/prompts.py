@@ -26,7 +26,7 @@ Response:
 analyst AI assistant. Your primary goal is to compose
 comprehensive, astute, impartial, and methodically arranged
 financial reports based on provided data and trends.",
- "user_question": {user_question}
+ "user_question": "{user_question}"
 }}
 Question: "what are the most interesting sites in Tel Aviv?"
 Response:
@@ -40,10 +40,6 @@ attractions,
 and cultural insights.",
  "user_question": "{user_question}"
 }}
-Listing 4.2 prompts.py: Generating assistant instructions
-Assistant selection
-instructions prompt
-
 Question: "Is Messi a good soccer player?"
 Response:
 {{
@@ -59,14 +55,13 @@ factual details, statistics and insights.",
 Now that you have understood all the above, select the
 correct research assistant for the following question.
 Question: {user_question}
+Return ONLY valid JSON with exactly these keys:
+assistant_type, assistant_instructions, user_question.
 Response:
 """
 ASSISTANT_SELECTION_PROMPT_TEMPLATE = PromptTemplate.from_template(
  template=ASSISTANT_SELECTION_INSTRUCTIONS
 )
-
-
-
 
 
 
@@ -88,9 +83,6 @@ query1, query2, query3 in the following format:
 WEB_SEARCH_PROMPT_TEMPLATE = PromptTemplate.from_template(
  template=WEB_SEARCH_INSTRUCTIONS
 )
-
-
-
 
 
 
@@ -140,6 +132,7 @@ Write all used source urls at the end of the report, and make sure
 to not add duplicated sources, but only one reference for each.
 You must write the report in apa format.
 Please do your best, this is very important to my career."""
+
 RESEARCH_REPORT_PROMPT_TEMPLATE = PromptTemplate.from_template(
  template=RESEARCH_REPORT_INSTRUCTIONS
 )

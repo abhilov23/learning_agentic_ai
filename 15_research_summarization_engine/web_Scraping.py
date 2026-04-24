@@ -18,7 +18,7 @@ def web_scrape(url: str) -> str:
             page_text = soup.get_text(separator="\n", strip=True)
             return page_text
         else:
-            return f"Could not retrieve the webpage :{e}"
+            return f"Could not retrieve the webpage. Status code: {response.status_code}"
     except Exception as e:
         print(e)
         return f"An error occurred while fetching the webpage: {e}"
