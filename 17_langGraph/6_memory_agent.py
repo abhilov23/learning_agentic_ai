@@ -34,3 +34,13 @@ while user_input != "quit":
     result = agent.invoke({"messages": conversation_history}) # here we send the entire conversation history instead of a single message
     print(result["messages"])
     user_input = input("Enter your message: ")
+
+with open("logging.txt", "w") as file:
+    file.Write("Your conversation history: ")
+    for message in conversation_history:
+        if isinstance(message, HumanMessage):
+            file.write(f"{message.content}\n")
+        elif isinstance(message, AIMessage):
+            file.write(f"AI: {message.content}\n")
+    
+print("Conversation saved to logging.....")
