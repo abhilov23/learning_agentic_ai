@@ -36,7 +36,7 @@ while user_input != "quit":
     user_input = input("Enter your message: ")
 
 with open("logging.txt", "w") as file:
-    file.Write("Your conversation history: ")
+    file.write("Your conversation history: ")
     for message in conversation_history:
         if isinstance(message, HumanMessage):
             file.write(f"{message.content}\n")

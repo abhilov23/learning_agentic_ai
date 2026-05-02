@@ -1,0 +1,4 @@
+Your conversation history: hello
+AI: Hello. How can I assist you today?
+exit
+AI: Goodbye.
