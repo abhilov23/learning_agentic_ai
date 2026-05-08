@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +12,15 @@
   "license": "ISC",
   "packageManager": "pnpm@10.33.4",
   "dependencies": {
-    "deepagents": "^1.10.0"
+    "@ai-sdk/openai-compatible": "^2.0.47",
+    "@langchain/openai": "^1.4.5",
+    "deepagents": "^1.10.0",
+    "dotenv": "^17.4.2",
+    "langchain": "^1.4.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "tsx": "^4.21.0"
   }
 }
